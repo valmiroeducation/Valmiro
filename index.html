@@ -237,6 +237,60 @@ pre,code,.v6-notice,.v5-panel,.v6-pane{overflow-wrap:anywhere}
 .footer{gap:14px!important}.footer>div:nth-child(2){display:flex;flex-wrap:wrap;justify-content:flex-end;gap:4px}.footer button:hover{color:#ff8085!important}
 
 </style>
+<style id="valmiro-9-navigation">
+
+/* VALMIRO 9.0 — selkeä navigointi. Etusivun hero on jätetty muuttamatta. */
+@media(min-width:1021px){
+  .header .menu-toggle{display:none}
+  .header .top-links{display:flex;align-self:stretch;align-items:stretch;gap:3px}
+}
+.vm9-entry{position:relative;display:flex;align-items:stretch;min-width:0}
+.header .top-links .vm9-trigger{background:transparent;border:0;color:#c8d6e7;font:750 13px/1.2 system-ui,sans-serif;letter-spacing:.02em;padding:0 15px;display:flex;gap:10px;align-items:center;border-radius:0;white-space:nowrap;transition:color .18s,background .18s;cursor:pointer}
+.header .top-links .vm9-trigger:hover,.header .top-links .vm9-entry.active>.vm9-trigger{color:white;background:#1d3047}
+.vm9-arrow{display:inline-block;width:7px;height:7px;border:solid currentColor;border-width:0 1.5px 1.5px 0;transform:rotate(45deg) translateY(-2px);opacity:.7;transition:transform .17s}
+.vm9-entry.active .vm9-arrow{transform:rotate(225deg) translate(-2px,-1px)}
+.vm9-dropdown{position:absolute;top:100%;left:0;width:292px;max-width:calc(100vw - 28px);padding:12px;background:linear-gradient(150deg,#192a3e,#101d2e);border:1px solid #405672;border-top:2px solid #f16d73;border-radius:0 0 14px 14px;box-shadow:0 25px 50px #0009;opacity:0;visibility:hidden;transform:translateY(-7px);pointer-events:none;transition:opacity .18s,transform .18s,visibility .18s;z-index:110}
+.vm9-entry:last-child .vm9-dropdown,.vm9-entry:nth-last-child(2) .vm9-dropdown{left:auto;right:0}
+.vm9-entry:hover .vm9-dropdown,.vm9-entry:focus-within .vm9-dropdown,.vm9-entry.active .vm9-dropdown{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto}
+.vm9-menu-caption{display:block;padding:5px 10px 11px;font-size:10px;font-weight:850;letter-spacing:1.5px;text-transform:uppercase;color:#ff969a}
+.header .top-links .vm9-dropdown button{display:flex;text-align:left;align-items:center;gap:11px;width:100%;padding:12px 11px;border-radius:9px;border:0;background:none;color:#d6e2f0;font-size:13px;font-weight:650;line-height:1.3;white-space:normal;transition:background .16s,color .16s}
+.header .top-links .vm9-dropdown button:hover,.header .top-links .vm9-dropdown button:focus-visible,.header .top-links .vm9-dropdown button[aria-current=page]{background:#2a4059;color:#fff}
+.vm9-menu-symbol{display:grid;place-items:center;flex:none;width:27px;height:27px;color:#ff999c;background:#f5677118;border:1px solid #f5677135;border-radius:7px;font-size:15px}
+.vm9-menu-sep{border:0;border-top:1px solid #314962;margin:8px 6px}
+.vm9-inline-note{color:#97abc1;font-size:11px;font-weight:400;display:block;margin-top:2px}
+/* Reunasta avautuva mobiilivalikko on jaettu ryhmiin, ei 20 erilliseen linkkiin. */
+.drawer .vm9-drawer-home,.drawer .vm9-drawer-item{display:block;width:100%;border:0;background:transparent;color:#d5e3f2;text-align:left;padding:12px 15px;font-weight:650;font-size:14px;border-radius:9px}
+.drawer .vm9-drawer-home:hover,.drawer .vm9-drawer-item:hover,.drawer .vm9-drawer-item:focus-visible{background:#253b55;color:#fff}
+.drawer .vm9-drawer-section{border-bottom:1px solid #2b4057;margin:0 15px}
+.drawer .vm9-drawer-section summary{list-style:none;display:flex;align-items:center;justify-content:space-between;padding:16px 11px;cursor:pointer;font-size:15px;font-weight:850;color:white}
+.drawer .vm9-drawer-section summary::-webkit-details-marker{display:none}
+.drawer .vm9-drawer-section summary:after{content:'+';color:#fb898e;font-size:22px;font-weight:400;line-height:1}
+.drawer .vm9-drawer-section[open] summary:after{content:'−'}
+.drawer .vm9-drawer-inner{padding:0 0 14px 9px}
+.drawer .vm9-drawer-subsection{margin:10px 5px 4px;color:#fc9b9f;text-transform:uppercase;font-size:10px;font-weight:850;letter-spacing:1px}
+.drawer .vm9-drawer-home{width:calc(100% - 30px);margin:17px 15px 5px;background:#1b3046}
+.drawer .drawer-foot{margin:22px 20px 28px}
+/* Työpöydällä ensin kolme tärkeintä työnkulkua, muut tarvittaessa näkyviin. */
+.vm9-workflows{display:grid;gap:22px}
+.vm9-worksection{border:1px solid #304b64;background:linear-gradient(145deg,#132439,#0f1b2b);padding:24px;border-radius:17px}
+.vm9-worksection h2{font-size:clamp(21px,2.5vw,29px);line-height:1.2;margin:4px 0 7px}
+.vm9-worksection p{margin:0 0 18px;color:#aec1d5;font-size:13px}
+.vm9-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.vm9-tile{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:8px;background:#192e45;border:1px solid #3a536d;border-radius:12px;padding:20px;text-align:left;color:#eef4fc;transition:border-color .2s,transform .2s,background .2s;cursor:pointer}
+.vm9-tile:hover{border-color:#ee7d83;background:#203a53;transform:translateY(-2px)}
+.vm9-tile svg{width:27px;height:27px;stroke:#fa8288;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.vm9-tile strong{font-size:17px;line-height:1.35}
+.vm9-tile small{color:#aec0d3;font-size:12px;line-height:1.5}
+.vm9-tile em{font-style:normal;font-size:12px;color:#ff999c;font-weight:800;margin-top:auto;padding-top:5px}
+.vm9-more{border:1px solid #345069;background:#122238;border-radius:15px;padding:6px 18px 18px}
+.vm9-more summary{cursor:pointer;font-weight:850;padding:15px 3px;color:#e5eef9}
+.vm9-more .vm9-tiles{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:5px}
+@media(max-width:1020px){.header .top-links{display:none}.header .menu-toggle{display:flex}}
+@media(max-width:800px){.vm9-tiles,.vm9-more .vm9-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:550px){.vm9-tiles,.vm9-more .vm9-tiles{grid-template-columns:1fr}.vm9-worksection{padding:17px}.vm9-tile{padding:17px}}
+@media(prefers-reduced-motion:reduce){.vm9-dropdown,.vm9-arrow,.vm9-tile{transition:none!important}}
+
+</style>
 </head>
 <body>
 <a class="skip" href="#main">Siirry sisältöön</a>
@@ -1861,6 +1915,94 @@ const foot=$8('.footer>div:nth-child(2)');if(foot){const b=document.createElemen
 const nav=$8('.top-links');if(nav){const b=document.createElement('button');b.type='button';b.dataset.go='/tyopoyta';b.textContent='Työpöytä';nav.append(b)}
 // Reset only when this version's route is directly requested on initial load.
 const initial=location.hash.split('?')[0];if(['/tyopoyta','/rastistudio','/harjoituspankki','/ohjaamo','/matriisi','/tilastoasema','/vuosikello','/taitokortit','/julkaisu'].some(x=>initial==='#'+x||initial.startsWith('#/harjoituspankki/')))route();
+})();
+
+</script>
+<script id="valmiro-9-script">
+
+/* VALMIRO 9 — selkeä navigaatio, kosketus-, näppäimistö- ja hiirituki. */
+(()=>{
+'use strict';
+const top=document.querySelector('.top-links');
+const drawer=document.querySelector('#drawer');
+if(!top||!drawer)return;
+const sections=[
+ {key:'learn',title:'Koulutukset',sub:'OPI JA TESTAA',items:[
+  ['/kurssit','Kurssikirjasto','▤'],['/kokeet','Kokeet ja tehtävät','✓'],['/liity','Liity kokeeseen','⌗'],['/oma','Oma oppiminen','◷']
+ ]},
+ {key:'practice',title:'Harjoitukset',sub:'HARJOITTELE',items:[
+  ['/tilanteet','Tilanneharjoitukset','◇'],['/taitokortit','Taitokortit','▦']
+ ]},
+ {key:'teach',title:'Kouluttajalle',sub:'SUUNNITTELE JA KOULUTA',items:[
+  ['/tyopoyta','Kouluttajan työpöytä','▦'],['/koeluoja','Luo harjoituskoe','✓'],['/harjoituspankki','Harjoituspankki','▤'],['/rastistudio','Rastistudio','✎'],['/ohjaamo','Harjoituksen ohjaamo','◉'],['/matriisi','Arviointi','▣']
+ ]},
+ {key:'info',title:'Valmiro',sub:'PALVELU',items:[
+  ['/tietoa','Tietoa Valmirosta','ⓘ'],['/tietosuoja','Tietosuoja','⬡'],['/evasteet','Evästeet ja tallennus','⚙']
+ ]}
+];
+const make=(tag,cls,text)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=text;return el};
+let active=null;
+function closeAll(){for(const group of top.querySelectorAll('.vm9-entry')){group.classList.remove('active');group.querySelector('.vm9-trigger').setAttribute('aria-expanded','false')}active=null}
+function activate(group){for(const entry of top.querySelectorAll('.vm9-entry')){const open=entry===group;entry.classList.toggle('active',open);entry.querySelector('.vm9-trigger').setAttribute('aria-expanded',String(open))}active=group}
+function navButton(path,title,symbol){const button=make('button',undefined);button.type='button';button.dataset.go=path;const icon=make('span','vm9-menu-symbol',symbol);icon.setAttribute('aria-hidden','true');button.append(icon,make('span','',title));return button}
+top.replaceChildren();
+for(const section of sections){
+ const group=make('div','vm9-entry');const trigger=make('button','vm9-trigger');trigger.type='button';trigger.setAttribute('aria-haspopup','true');trigger.setAttribute('aria-expanded','false');trigger.setAttribute('aria-controls','vm9-drop-'+section.key);trigger.append(make('span','',section.title),make('span','vm9-arrow'));
+ const panel=make('div','vm9-dropdown');panel.id='vm9-drop-'+section.key;panel.setAttribute('role','group');panel.setAttribute('aria-label',section.title);panel.append(make('span','vm9-menu-caption',section.sub));
+ for(const [path,title,symbol] of section.items){panel.append(navButton(path,title,symbol))}
+ group.append(trigger,panel);top.append(group);
+ group.addEventListener('mouseenter',()=>activate(group));
+ group.addEventListener('mouseleave',()=>{if(!group.contains(document.activeElement))closeAll()});
+ group.addEventListener('focusin',()=>activate(group));
+ trigger.addEventListener('click',()=>{if(active===group){closeAll();trigger.blur()}else activate(group)});
+ trigger.addEventListener('keydown',e=>{if(e.key==='ArrowDown'){e.preventDefault();activate(group);panel.querySelector('button')?.focus()}if(e.key==='Escape'){e.preventDefault();closeAll();trigger.focus()}});
+ group.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();closeAll();trigger.focus()}});
+ panel.addEventListener('click',()=>closeAll());
+}
+document.addEventListener('pointerdown',e=>{if(!top.contains(e.target))closeAll()});
+document.addEventListener('focusin',e=>{if(!top.contains(e.target))closeAll()});
+window.addEventListener('hashchange',()=>{closeAll();markCurrent()});
+function markCurrent(){let path='';try{path=decodeURIComponent(location.hash.slice(1).split('?')[0])}catch{}const tools=['/rastistudio','/harjoituspankki','/ohjaamo','/matriisi','/tyopoyta','/koeluoja','/tyokalut','/arviointi','/vuosikello','/tilastoasema','/julkaisu'];for(const b of top.querySelectorAll('[data-go]')){const match=b.dataset.go===path;if(match)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')}}
+// Mobiilin reunavalikko: samat ryhmät, lisätoiminnot löytyvät myös työpöydältä.
+const oldHead=drawer.querySelector('.drawer-head');const oldFoot=drawer.querySelector('.drawer-foot');const close=drawer.querySelector('#menuClose');
+drawer.replaceChildren();if(oldHead)drawer.append(oldHead);
+const home=make('button','vm9-drawer-home','Etusivu');home.type='button';home.dataset.go='/';drawer.append(home);
+for(const section of sections){const details=make('details','vm9-drawer-section');const summary=make('summary','',section.title);details.append(summary);const inner=make('div','vm9-drawer-inner');for(const [path,title] of section.items){const button=make('button','vm9-drawer-item',title);button.type='button';button.dataset.go=path;inner.append(button)}if(section.key==='teach'){
+ const advanced=make('details','vm9-drawer-section');advanced.style.margin='8px 0 0';advanced.append(make('summary','', 'Muut työkalut'));const list=make('div','vm9-drawer-inner');for(const [path,title] of [['/tilastoasema','Tilastoasema'],['/vuosikello','Koulutusvuosikello'],['/julkaisu','Julkaisun tarkistuslista']]){const b=make('button','vm9-drawer-item',title);b.type='button';b.dataset.go=path;list.append(b)}advanced.append(list);inner.append(advanced)}details.append(inner);drawer.append(details)}
+if(oldFoot)drawer.append(oldFoot);
+close?.addEventListener('click',()=>typeof toggleMenu==='function'&&toggleMenu(false));
+drawer.addEventListener('click',e=>{if(e.target.closest('[data-go]'))for(const d of drawer.querySelectorAll('details'))d.open=false});
+// Työpöydän 9 tasavahvan työkalukortin tilalla ohjattu työnkulku ja edistyneet työkalut piilossa.
+const icons={
+ 'list':'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 9h6M9 13h6M9 17h5"/>',
+ 'edit':'<path d="m5 19 4.5-1 10-10-3.5-3.5-10 10zM15 5l4 4"/>',
+ 'book':'<path d="M4 5.5c4-1.5 6-1 8 1 2-2 4-2.5 8-1v14c-4-1.5-6-1-8 1-2-2.5-4-2.5-8-1zM12 6.5v14"/>',
+ 'play':'<circle cx="12" cy="12" r="9"/><path d="m10 8 6 4-6 4z"/>',
+ 'check':'<path d="M4 12.5 9 17l11-11"/><path d="M20 13v7H4V4h10"/>',
+ 'chart':'<path d="M4 20V12M10 20V5M16 20V9M22 20H2"/>'};
+function tile(path,title,detail,ico){const button=make('button','vm9-tile');button.type='button';button.dataset.go=path;button.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true">${icons[ico]||icons.list}</svg>`;button.append(make('strong','',title),make('small','',detail),make('em','','Avaa →'));return button}
+function workSection(step,title,description,items){const sec=make('section','vm9-worksection');sec.append(make('span','eyebrow',step),make('h2','',title),make('p','',description));const list=make('div','vm9-tiles');for(const item of items)list.append(tile(...item));sec.append(list);return sec}
+function simplifyWorkspace(){const root=document.querySelector('.vm8-main > .vm8-grid');if(!root||root.dataset.vm9Done)return;const flow=make('div','vm9-workflows');flow.dataset.vm9Done='1';flow.append(workSection('01 / VALMISTELE','Suunnittele harjoitus','Valitse oma suunnitelma, valmis pohja tai kouluttajan koe.',[
+ ['/rastistudio','Rastistudio','Yksiköt, tilannekortit ja tulostettavat tehtävät.','edit'],
+ ['/harjoituspankki','Harjoituspankki','Avaa valmis runko ja muokkaa se ryhmällesi.','book'],
+ ['/koeluoja','Luo koe','Kysymykset ja julkaisu liittymiskoodilla.','list']
+]));flow.append(workSection('02 / HARJOITUKSESSA','Ohjaa ja arvioi','Työkalut harjoitustilanteen aikana ja sen jälkeen.',[
+ ['/ohjaamo','Harjoituksen ohjaamo','Aikajana, tilannekortit ja kouluttajan havainnot.','play'],
+ ['/matriisi','Arviointimatriisi','Arvioi suorituksia ja tulosta palautteet.','check'],
+ ['/tyokalut','Kouluttajan apuvälineet','Rastikello ja valmistelun tarkistuslista.','chart']
+]));const more=make('details','vm9-more');more.append(make('summary','', 'Muut työkalut (tarvittaessa)'));const moreGrid=make('div','vm9-tiles');for(const item of [
+ ['/tilastoasema','Tilastoasema','Harjoittele omilla CSV-aineistoilla.','chart'],
+ ['/vuosikello','Koulutusvuosikello','Vuoden harjoitusten suunnitteluun.','list'],
+ ['/taitokortit','Taitokortit','Kertaa aiheita lyhyillä korteilla.','book'],
+ ['/julkaisu','Julkaisun laatutarkastus','Valmiron ylläpidon tarkistuslista.','check']])moreGrid.append(tile(...item));more.append(moreGrid);flow.append(more);root.replaceWith(flow)}
+// Reititin pysyy ennallaan, mutta työpöytä viimeistellään aina sen avautuessa.
+if(typeof route==='function'){
+ const previous=route;
+ window.removeEventListener('hashchange',previous);
+ route=function(){previous();if(location.hash.split('?')[0]==='#/tyopoyta')simplifyWorkspace()};
+ window.addEventListener('hashchange',route);
+}
+markCurrent();if(location.hash.split('?')[0]==='#/tyopoyta')simplifyWorkspace();
 })();
 
 </script>
