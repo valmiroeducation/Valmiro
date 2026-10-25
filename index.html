@@ -964,5 +964,325 @@ if(storeChoice===null)openCookie();
 })();
 
 </script>
+<script>
+/* VALMIRO 6.0 – Oma koe / liittyminen / siisti tallennusilmoitus
+   Liitä nykyisen index.html:n loppuun ennen </body>-tagia erilliseen <script>-lohkoon.
+   GitHub Pages toimii sellaisenaan, mutta lyhyet verkkokoodit vaativat Worker-API:n.
+*/
+(()=>{
+'use strict';
+// ASETUS: Korvaa osoite Cloudflare Workerisi osoitteella, kun se on julkaistu.
+// Esimerkki: https://valmiro-kokeet.omakayttaja.workers.dev
+const EXAM_API = '';
+const DRAFT_KEY='valmiro_exam_draft_v6';
+const $v=(s,ctx=document)=>ctx.querySelector(s);
+const escV=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nav=(path)=>go(path);
+const makeId=()=>crypto.getRandomValues(new Uint32Array(1))[0].toString(36);
+const blankQ=(type='single')=>({id:makeId(),type,prompt:'',options:['','','',''],correct:[0],answer:'',tolerance:0,points:1});
+const sample=()=>({title:'Uusi harjoituskoe',instructions:'Lue kysymykset huolellisesti ja perustele avoimet vastaukset omin sanoin.',questions:[
+ {...blankQ('single'),prompt:'Harjoituksessa annetaan kaksi ristiriitaista sijaintitietoa. Mikä on perustelluin ensitoimi?',options:['Varmistan, kumpi tieto on voimassa.','Valitsen viimeisimmän viestin olettaen sen oikeaksi.','Noudatan aiempaa kirjallista ohjetta.','Pyydän muita toimimaan itsenäisesti.'],correct:[0]},
+ {...blankQ('multiple'),prompt:'Mitkä asiat vaikuttavat radioviestin ymmärrettävyyteen?',options:['Selkeä vastaanottajan tunnistus','Ytimekäs mutta riittävä sisältö','Epävarman tiedon esittäminen varmana','Tarvittaessa tehtävä tarkennus'],correct:[0,1,3]},
+ {...blankQ('text'),prompt:'Kuvaa omin sanoin, miten kokoontumispaikkaa koskevan ristiriidan voisi selvittää.',answer:'Ilmoitan ristiriidan ja varmistan vastuuhenkilöltä voimassa olevan kokoontumispaikan ennen siirtymistä.'}
+ ]});
+let draft=sample();
+let currentExam=null;
+let studentAnswers={};
+let publishedCode='';
+const consent=()=>{try{return localStorage.getItem('valmiro_storage_choice_v5')==='yes'}catch{return false}};
+function loadDraft(){if(!consent())return;try{const d=JSON.parse(localStorage.getItem(DRAFT_KEY));if(d&&Array.isArray(d.questions))draft=cleanExam(d)}catch{}}
+function saveDraft(silent=false){if(consent()){try{localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));if(!silent)notice('Luonnos tallennettu tähän selaimeen.')}catch{notice('Tallennus ei onnistunut.')}}else if(!silent)notice('Salli paikallinen tallennus evästeasetuksista, jos haluat säilyttää luonnoksen selaimessa.');}
+function notice(message,type=''){const n=$v('#v6Notice');if(n){n.textContent=message;n.className='v6-notice '+type;}}
+function cleanExam(input){const q=Array.isArray(input.questions)?input.questions.slice(0,25):[];return{
+ title:String(input.title||'Harjoituskoe').slice(0,120),
+ instructions:String(input.instructions||'').slice(0,1500),
+ questions:q.map(x=>({
+  id:String(x.id||makeId()).slice(0,40),
+  type:['single','multiple','numeric','ordering','text'].includes(x.type)?x.type:'single',
+  prompt:String(x.prompt||'').slice(0,600),
+  options:(Array.isArray(x.options)?x.options:[]).slice(0,7).map(y=>String(y||'').slice(0,220)),
+  correct:(Array.isArray(x.correct)?x.correct:[]).map(Number).filter(Number.isInteger).slice(0,7),
+  answer:String(x.answer||'').slice(0,1200),
+  tolerance:Math.max(0,Number(x.tolerance)||0),
+  points:1
+ }))};}
+const editorStyles=String.raw`
+.v6-kicker{font-size:11px;letter-spacing:1.5px;font-weight:850;color:#ff878c;text-transform:uppercase}
+.v6-grid{display:grid;grid-template-columns:1fr 280px;gap:20px;align-items:start}
+.v6-pane,.v6-item{background:linear-gradient(150deg,#15263a,#101c2b);border:1px solid #30465f;border-radius:16px;padding:23px;box-shadow:0 14px 36px #0002}
+.v6-item{margin:14px 0;padding:19px}
+.v6-line{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.v6-label{display:block;font-size:12px;color:#b1c3d7;font-weight:700;margin:12px 0 6px}
+.v6-control{display:block;width:100%;background:#0a1624;border:1px solid #3d536d;color:#f1f5fb;border-radius:9px;padding:12px;min-height:45px;outline-offset:2px}
+textarea.v6-control{min-height:88px;resize:vertical}
+.v6-options{display:grid;gap:10px;margin:14px 0}
+.v6-option{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center}
+.v6-option input[type=checkbox],.v6-option input[type=radio]{accent-color:#f16469;width:17px;height:17px}
+.v6-option>.v6-control{min-width:0}
+.v6-line>.v6-control{min-width:0}
+.v6-muted{color:#a6b8cc;font-size:13px}
+.v6-soft{background:#1a3046;border:1px solid #425a75;color:white;border-radius:9px;padding:10px 14px;font-weight:700}
+.v6-soft:hover{background:#28435f}
+.v6-red{background:#e5484d;color:white;border:0;border-radius:9px;padding:11px 16px;font-weight:800}
+.v6-red:hover{background:#cf353b}
+.v6-actions{display:flex;flex-wrap:wrap;gap:9px;margin:16px 0}
+.v6-notice{color:#c8d5e4;background:#192e42;border:1px solid #405b73;padding:13px 15px;border-radius:10px;margin:16px 0;min-height:48px}
+.v6-notice.error{color:#ffd8d9;border-color:#a74950}
+.v6-notice.success{color:#bff2db;border-color:#457a61}
+.v6-badge{background:#2e3e55;border-radius:6px;padding:4px 9px;color:#cdd7e4;font-size:11px;font-weight:800}
+.v6-code{background:#0b1422;color:#fff;letter-spacing:5px;font-size:clamp(26px,4vw,40px);padding:17px 22px;border:1px dashed #fb7276;border-radius:13px;font-weight:900;text-align:center;user-select:all}
+.v6-student{max-width:850px;margin:0 auto}
+.v6-choice{border:1px solid #38506b;border-radius:10px;background:#0e1b2b;padding:14px;margin:8px 0;display:flex;align-items:flex-start;gap:13px;cursor:pointer;color:#dce7f3}
+.v6-choice:has(input:checked){border-color:#f16c72;background:#39212b}
+.v6-choice input{margin-top:5px;accent-color:#e5484d}
+.v6-order-row{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#102137;border:1px solid #344d66;border-radius:10px;padding:11px;margin:8px 0}
+.v6-order-row span{flex:1}
+.v6-chip{border:1px solid #42607a;background:#1e3248;border-radius:8px;color:white;padding:7px 11px}
+.v6-chip:disabled{opacity:.45}
+.v6-results{padding:16px;background:#11263a;border:1px solid #3f5670;border-radius:12px;margin:15px 0}
+.v6-score{font-size:26px;font-weight:850;color:#fff}
+.v6-access{background:#0b1624;border:1px solid #32455d;padding:20px;border-radius:14px}
+.v6-divider{border:0;border-top:1px solid #2e4058;margin:22px 0}
+/* Korvaa suuren evästemodaalin siistillä kulmailmoituksella; kaikki napit toimivat edelleen. */
+.cookie-screen{position:fixed!important;inset:auto 14px 14px auto!important;width:min(405px,calc(100vw - 28px))!important;display:block!important;background:transparent!important;backdrop-filter:none!important;padding:0!important;pointer-events:none!important;z-index:200!important}
+.cookie-screen[hidden]{display:none!important}
+.cookie-panel{width:100%!important;max-height:75dvh!important;overflow:auto!important;padding:19px!important;border-radius:15px!important;box-shadow:0 22px 60px #000b!important;background:#112035!important;pointer-events:auto!important}
+.cookie-panel h2{font-size:19px!important;line-height:1.3!important}
+.cookie-panel p{font-size:12px!important;line-height:1.55!important}
+.cookie-panel .v5-switch{display:none!important}
+#saveStoragePref{display:none!important}
+.cookie-panel .v5-row{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important}
+.cookie-panel .v5-row .btn{min-width:0!important;width:100%!important;padding:9px 8px!important;font-size:12px!important}
+#declineStorage{background:#283b50!important;color:white!important}
+@media(max-width:800px){.v6-grid{grid-template-columns:1fr}.v6-pane{padding:16px}.cookie-screen{right:9px!important;bottom:9px!important;left:9px!important;width:auto!important}}
+`;
+const style=document.createElement('style');style.textContent=editorStyles;document.head.appendChild(style);
+const API=EXAM_API.replace(/\/+$/,'');
+const heading=(ey,title,desc)=>`<div class="page-head glass-page enhance-hero"><div class="shell"><div class="eyebrow">${escV(ey)}</div><h1>${escV(title)}</h1><p>${escV(desc)}</p></div></div>`;
+function editorPage(){
+ document.querySelector('#main').innerHTML=heading('KOULUTTAJAKESKUS / KOKEET','Luo oma koe','Rakenna tehtävät, esikatsele koe ja julkaise liittymiskoodi osallistujille.')+`
+ <section class="section shell"><div class="v6-grid"><div class="v6-pane">
+ <div class="v6-kicker">KOKEEN PERUSTIEDOT</div>
+ <label class="v6-label" for="v6Title">Kokeen nimi</label><input class="v6-control" id="v6Title" maxlength="120" value="${escV(draft.title)}">
+ <label class="v6-label" for="v6Instructions">Ohje osallistujalle</label><textarea class="v6-control" id="v6Instructions" maxlength="1500">${escV(draft.instructions)}</textarea>
+ <hr class="v6-divider"><div class="v6-line"><h2 style="margin:0">Kysymykset <small class="v6-muted" id="v6Count">(${draft.questions.length}/25)</small></h2></div>
+ <div id="v6QuestionList"></div><div class="v6-actions"><button class="v6-soft" id="v6Add">+ Lisää kysymys</button><button class="v6-soft" id="v6Save">Tallenna luonnos</button><button class="v6-soft" id="v6Export">Vie JSON-tiedosto</button><button class="v6-soft" id="v6Import">Tuo JSON</button><input id="v6ImportFile" type="file" accept=".json,application/json" hidden></div>
+ </div><aside class="v6-pane"><div class="v6-kicker">JULKAISE KOE</div><h2>Liittymiskoodi</h2><p class="v6-muted">Oppilaat voivat syöttää koodin Kokeet-sivulla. Kokeet säilyvät palvelimella 14 päivää.</p>
+ <label class="v6-label" for="v6TeacherKey">Kouluttajan julkaisusalaisuus</label><input class="v6-control" id="v6TeacherKey" type="password" autocomplete="off" placeholder="Cloudflare Workerin salaisuus">
+ <p class="v6-muted">Salaisuutta ei tallenneta selaimeen eikä GitHubiin.</p>
+ ${API?`<p class="v6-muted">Yhteys: ${escV(API)}</p>`:`<div class="v6-notice">Lyhyet koodit vaativat Cloudflare Workerin. Sen osoite lisätään koodin <code>EXAM_API</code>-asetukseen. Voit jo nyt luoda ja kokeilla koetta.</div>`}
+ <button class="v6-red" id="v6Publish" ${API?'':'disabled'}>Julkaise ja luo koodi</button>
+ <div id="v6Published"></div><hr class="v6-divider"><div class="v6-kicker">ENNAKKOTARKISTUS</div><p class="v6-muted">Näet kokeen täsmälleen opiskelijan näkymässä.</p><button class="v6-soft" id="v6Preview">Esikatsele koetta →</button>
+ <p class="v6-muted">Älä sisällytä kokeisiin oikeiden henkilöiden tietoja. Vastaukset tarkistetaan osallistujan selaimessa eikä niitä lähetetä palvelimelle.</p>
+ </aside></div><div id="v6Notice" class="v6-notice" role="status" aria-live="polite">Valmis muokattavaksi.</div></section>`;
+ $v('#v6Title').addEventListener('input',e=>{draft.title=e.target.value;saveDraft(true)});
+ $v('#v6Instructions').addEventListener('input',e=>{draft.instructions=e.target.value;saveDraft(true)});
+ $v('#v6Add').addEventListener('click',()=>{if(draft.questions.length>=25)return notice('Enintään 25 kysymystä.','error');draft.questions.push(blankQ());renderQuestions();saveDraft(true)});
+ $v('#v6Save').addEventListener('click',()=>saveDraft());
+ $v('#v6Preview').addEventListener('click',()=>{if(!validDraft())return;currentExam=cleanExam(draft);publishedCode='';studentAnswers={};nav('/liity');});
+ $v('#v6Publish').addEventListener('click',publish);
+ $v('#v6Export').addEventListener('click',()=>downloadJson(cleanExam(draft)));
+ $v('#v6Import').addEventListener('click',()=>$v('#v6ImportFile').click());
+ $v('#v6ImportFile').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>65000)throw Error('Tiedosto on liian suuri.');draft=cleanExam(JSON.parse(await file.text()));editorPage();notice('Koetiedosto tuotu.','success');saveDraft(true)}catch(err){notice('Tiedoston lukeminen epäonnistui: '+err.message,'error')}});
+ renderQuestions();
+}
+function downloadJson(exam){const blob=new Blob([JSON.stringify(exam,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='valmiro-koe.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),800);}
+function renderQuestions(){
+ const list=$v('#v6QuestionList');if(!list)return;
+ $v('#v6Count').textContent=`(${draft.questions.length}/25)`;
+ list.innerHTML=draft.questions.map((q,i)=>{
+  const isChoice=q.type==='single'||q.type==='multiple'||q.type==='ordering';
+  return `<article class="v6-item" data-qindex="${i}">
+  <div class="v6-line"><strong>${i+1}. kysymys</strong><span class="v6-badge">1 piste</span><div><button class="v6-soft" data-act="up" data-index="${i}" ${i?'':'disabled'} aria-label="Siirrä kysymystä ylöspäin">↑</button> <button class="v6-soft" data-act="down" data-index="${i}" ${i<draft.questions.length-1?'':'disabled'} aria-label="Siirrä kysymystä alaspäin">↓</button> <button class="v6-soft" data-act="remove" data-index="${i}">Poista</button></div></div>
+  <label class="v6-label">Tehtävätyyppi</label><select class="v6-control" data-prop="type" data-index="${i}">${[
+   ['single','Monivalinta – yksi oikea'],['multiple','Monivalinta – useita oikeita'],['numeric','Lukutehtävä'],['ordering','Järjestystehtävä'],['text','Avoin perustelu']
+  ].map(([value,label])=>`<option value="${value}" ${q.type===value?'selected':''}>${label}</option>`).join('')}</select>
+  <label class="v6-label">Kysymysteksti</label><textarea class="v6-control" data-prop="prompt" data-index="${i}" maxlength="600">${escV(q.prompt)}</textarea>
+  ${isChoice?`<label class="v6-label">${q.type==='ordering'?'Vaiheet oikeassa järjestyksessä (ylhäältä alas)':'Vastausvaihtoehdot – merkitse oikea(t)'}</label><div class="v6-options">${q.options.slice(0,7).map((o,j)=>`<label class="v6-option">${q.type==='ordering'?`<span class="v6-badge">${j+1}</span>`:`<input data-index="${i}" data-check="${j}" type="${q.type==='single'?'radio':'checkbox'}" name="v6corr${i}" ${q.correct.includes(j)?'checked':''}>`}<input class="v6-control" data-opt="${j}" data-index="${i}" value="${escV(o)}" maxlength="220" placeholder="Vaihtoehto ${j+1}"></label>`).join('')}</div>`:''}
+  ${q.type==='numeric'?`<div class="v6-line"><label style="flex:1"><span class="v6-label">Oikea lukuarvo</span><input class="v6-control" data-prop="answer" data-index="${i}" value="${escV(q.answer)}" placeholder="Esim. 25"></label><label style="flex:1"><span class="v6-label">Hyväksytty poikkeama ±</span><input class="v6-control" data-prop="tolerance" data-index="${i}" type="number" min="0" step="any" value="${Number(q.tolerance)||0}"></label></div>`:''}
+  ${q.type==='text'?`<label class="v6-label">Mallivastaus ja arviointikriteeri</label><textarea class="v6-control" data-prop="answer" data-index="${i}" maxlength="1200" placeholder="Kirjoita, mitä hyvästä vastauksesta pitäisi löytyä.">${escV(q.answer)}</textarea><p class="v6-muted">Avoimesta vastauksesta annetaan mallivastaus, mutta sitä ei pisteytetä automaattisesti.</p>`:''}
+  </article>`;
+ }).join('');
+ list.querySelectorAll('[data-prop]').forEach(el=>el.addEventListener('input',e=>{
+   const i=Number(e.target.dataset.index),prop=e.target.dataset.prop;draft.questions[i][prop]=e.target.value;
+   if(prop==='type'){
+    draft.questions[i].correct=[0];renderQuestions();
+   }
+   saveDraft(true);
+ }));
+ list.querySelectorAll('[data-opt]').forEach(el=>el.addEventListener('input',e=>{draft.questions[Number(el.dataset.index)].options[Number(el.dataset.opt)]=e.target.value;saveDraft(true)}));
+ list.querySelectorAll('[data-check]').forEach(el=>el.addEventListener('change',e=>{
+   const i=Number(el.dataset.index),j=Number(el.dataset.check),q=draft.questions[i];
+   if(q.type==='single')q.correct=[j];
+   else if(el.checked)q.correct=[...new Set([...q.correct,j])].sort((a,b)=>a-b);
+   else q.correct=q.correct.filter(x=>x!==j);
+   saveDraft(true);
+ }));
+ list.querySelectorAll('[data-act]').forEach(el=>el.addEventListener('click',e=>{
+   const i=Number(el.dataset.index),act=el.dataset.act;
+   if(act==='remove'){draft.questions.splice(i,1)}
+   if(act==='up'&&i>0)[draft.questions[i-1],draft.questions[i]]=[draft.questions[i],draft.questions[i-1]];
+   if(act==='down'&&i<draft.questions.length-1)[draft.questions[i+1],draft.questions[i]]=[draft.questions[i],draft.questions[i+1]];
+   renderQuestions();saveDraft(true);
+ }));
+}
+function validDraft(){
+ if(!draft.title.trim()){notice('Anna kokeelle nimi.','error');return false}
+ if(!draft.questions.length){notice('Lisää vähintään yksi kysymys.','error');return false}
+ for(const [i,q] of draft.questions.entries()){
+  if(!q.prompt.trim()){notice('Kysymyksestä '+(i+1)+' puuttuu teksti.','error');return false}
+  if(['single','multiple','ordering'].includes(q.type)){
+   if(q.options.filter(x=>x.trim()).length<2 || q.options.some(x=>!x.trim())){notice('Kysymyksen '+(i+1)+' kaikki neljä vaihtoehtoa/vaihetta pitää täyttää.','error');return false}
+   if(q.type!=='ordering'&&!q.correct.length){notice('Merkitse oikea vastaus kysymykseen '+(i+1)+'.','error');return false}
+  }
+  if(q.type==='numeric'&&(!q.answer.trim()||!Number.isFinite(Number(q.answer.replace(',','.'))))){notice('Tarkista lukuarvo kysymyksessä '+(i+1)+'.','error');return false}
+  if(q.type==='text'&&!q.answer.trim()){notice('Anna mallivastaus kysymykseen '+(i+1)+'.','error');return false}
+ }
+ return true;
+}
+async function publish(){
+ if(!validDraft())return;
+ if(!API){notice('Määritä ensin EXAM_API. Lyhyttä koodia ei voi julkaista ilman palvelinta.','error');return}
+ const key=$v('#v6TeacherKey').value.trim();
+ if(!key){notice('Anna Cloudflare-palvelimelle määrittämäsi julkaisusalaisuus.','error');return}
+ const btn=$v('#v6Publish');btn.disabled=true;btn.textContent='Julkaistaan…';
+ try{
+  const r=await fetch(API+'/exams',{method:'POST',headers:{'Content-Type':'application/json','x-valmiro-editor-key':key},body:JSON.stringify({exam:cleanExam(draft)})});
+  const json=await r.json().catch(()=>({}));if(!r.ok)throw Error(json.error||'Palvelinvirhe '+r.status);
+  publishedCode=json.code;
+  const url=location.href.split('#')[0]+'#/liity?code='+encodeURIComponent(json.code);
+  $v('#v6Published').innerHTML=`<div class="v6-notice success"><b>Koe julkaistu!</b><div class="v6-code">${escV(json.code)}</div><p class="v6-muted">Voimassa ${escV(json.expiresDays||14)} päivää. Koodi toimii eri laitteilla.</p><button class="v6-soft" id="v6CopyLink">Kopioi liittymislinkki</button><button class="v6-soft" id="v6CopyCode">Kopioi koodi</button></div>`;
+  $v('#v6CopyLink').addEventListener('click',()=>navigator.clipboard.writeText(url).then(()=>notice('Linkki kopioitu.','success')));
+  $v('#v6CopyCode').addEventListener('click',()=>navigator.clipboard.writeText(json.code).then(()=>notice('Koodi kopioitu.','success')));
+  notice('Koe julkaistu onnistuneesti.','success');
+ }catch(e){notice('Julkaisu epäonnistui: '+e.message,'error')}
+ finally{btn.disabled=false;btn.textContent='Julkaise ja luo koodi'}
+}
+function joinPage(){
+ const query=new URLSearchParams((location.hash.split('?')[1]||''));
+ const candidate=query.get('code')||'';
+ document.querySelector('#main').innerHTML=heading('KOKEET','Liity kokeeseen','Syötä kouluttajalta saamasi liittymiskoodi ja suorita koe ilman käyttäjätiliä.')+`
+ <section class="section shell"><div class="v6-pane v6-student"><div class="v6-kicker">LIITTYMINEN</div><h2>Anna liittymiskoodi</h2>
+ <div class="v6-line"><input class="v6-control" style="flex:1;letter-spacing:3px;text-transform:uppercase" id="v6JoinCode" autocomplete="off" inputmode="text" maxlength="10" placeholder="Esim. H7K9PTQ2" value="${escV(candidate)}"><button class="v6-red" id="v6Join">Liity kokeeseen →</button></div>
+ <p class="v6-muted">Koodin avulla saat kouluttajan julkaiseman kokeen. Vastaustuloksia ei kerätä palvelimelle.</p>
+ ${API?'':`<div class="v6-notice">Koodihakua ei ole vielä yhdistetty. Ylläpitäjän täytyy määrittää Cloudflare Worker. Voit silti avata opettajan lähettämän koetiedoston alta.</div>`}
+ <hr class="v6-divider"><h3>Avaa koetiedosto</h3><p class="v6-muted">Jos kouluttaja jakaa .json-tiedoston, voit avata kokeen myös ilman verkkopalvelinta.</p>
+ <input type="file" id="v6StudentFile" accept=".json,application/json" class="v6-control"><div id="v6JoinStatus" class="v6-notice" role="status" aria-live="polite">Koe odottaa avaamista.</div>
+ </div><div id="v6Quiz"></div></section>`;
+ $v('#v6Join').addEventListener('click',joinCode);
+ $v('#v6JoinCode').addEventListener('keydown',e=>{if(e.key==='Enter')joinCode()});
+ $v('#v6StudentFile').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>65000)throw Error('Tiedosto on liian suuri');currentExam=cleanExam(JSON.parse(await file.text()));studentAnswers={};$v('#v6JoinStatus').textContent='Koe avattu tiedostosta.';renderStudent()}catch(err){$v('#v6JoinStatus').textContent='Tiedoston avaaminen epäonnistui: '+err.message}});
+ if(currentExam&&!candidate)renderStudent();
+ if(candidate&&API)joinCode();
+}
+async function joinCode(){
+ const code=$v('#v6JoinCode')?.value?.trim().toUpperCase().replace(/\s/g,'')||'';
+ const status=$v('#v6JoinStatus');
+ if(!/^[A-HJ-NP-Z2-9]{8}$/.test(code)){status.textContent='Koodi on kahdeksan merkkiä (kirjaimia ja numeroita).';return}
+ if(!API){status.textContent='Koodihaku vaatii palvelimen. Pyydä kouluttajalta koetiedosto tai odota, että ylläpitäjä ottaa palvelun käyttöön.';return}
+ status.textContent='Haetaan koetta…';
+ try{const r=await fetch(API+'/exams/'+encodeURIComponent(code),{cache:'no-store'});const j=await r.json();if(!r.ok)throw Error(j.error||'Koetta ei löytynyt');currentExam=cleanExam(j.exam);publishedCode=code;studentAnswers={};status.textContent='Koe löytyi: '+currentExam.title;renderStudent()}
+ catch(err){status.textContent='Kokeen avaaminen epäonnistui: '+err.message+' (uuden kokeen julkaisu voi näkyä pienellä viiveellä).'}
+}
+function renderStudent(){
+ const box=$v('#v6Quiz');if(!box||!currentExam)return;
+ box.innerHTML=`<div class="v6-pane v6-student" style="margin-top:22px"><span class="v6-kicker">KOESUORITUS</span><h2>${escV(currentExam.title)}</h2><p class="v6-muted">${escV(currentExam.instructions)}</p><div id="v6StudentQs"></div><div class="v6-actions"><button class="v6-red" id="v6Finish">Tarkista vastaukset</button></div><div id="v6Feedback" aria-live="polite"></div></div>`;
+ $v('#v6StudentQs').innerHTML=currentExam.questions.map((q,i)=>{
+  const content=q.type==='single'||q.type==='multiple'?q.options.map((choice,j)=>`<label class="v6-choice"><input type="${q.type==='single'?'radio':'checkbox'}" name="v6s${i}" value="${j}"><span>${escV(choice)}</span></label>`).join('')
+   :q.type==='numeric'?`<label class="v6-label">Vastaus numerona</label><input type="text" class="v6-control" inputmode="decimal" data-num="${i}" placeholder="Esim. 12,5">`
+   :q.type==='text'?`<label class="v6-label">Kirjallinen vastaus</label><textarea class="v6-control" data-text="${i}" placeholder="Kirjoita perustelusi tähän…"></textarea>`
+   :`<p class="v6-muted">Siirrä vaiheita oikeaan järjestykseen nuolilla.</p><div id="v6Order${i}"></div>`;
+  return `<article class="v6-item" style="margin:18px 0"><strong>${i+1}. ${escV(q.prompt)}</strong><div style="margin-top:12px">${content}</div></article>`;
+ }).join('');
+ currentExam.questions.forEach((q,i)=>{if(q.type==='ordering'){
+  const order=q.options.map((_,j)=>j);for(let j=order.length-1;j>0;j--){const k=Math.floor(Math.random()*(j+1));[order[j],order[k]]=[order[k],order[j]]} studentAnswers[i]=order;renderOrder(i);
+ }});
+ $v('#v6Finish').addEventListener('click',finishExam);
+}
+function renderOrder(i){const q=currentExam.questions[i],order=studentAnswers[i],target=$v('#v6Order'+i);if(!target)return;
+ target.innerHTML=order.map((original,j)=>`<div class="v6-order-row"><span>${j+1}. ${escV(q.options[original])}</span><button type="button" class="v6-chip" data-order-move="up" data-pos="${j}" ${j===0?'disabled':''}>↑</button><button type="button" class="v6-chip" data-order-move="down" data-pos="${j}" ${j===order.length-1?'disabled':''}>↓</button></div>`).join('');
+ target.querySelectorAll('[data-order-move]').forEach(b=>b.addEventListener('click',()=>{const k=Number(b.dataset.pos),l=k+(b.dataset.orderMove==='up'?-1:1);[order[k],order[l]]=[order[l],order[k]];renderOrder(i)}));
+}
+function finishExam(){
+ if(!currentExam)return;
+ let total=0,earned=0,manual=0;const details=[];
+ for(const [i,q] of currentExam.questions.entries()){
+  if(q.type==='text'){
+   const response=$v(`[data-text="${i}"]`)?.value.trim()||'';
+   if(!response){$v('#v6Feedback').innerHTML='<div class="v6-notice error">Vastaa myös kaikkiin avoimiin kysymyksiin.</div>';return}
+   manual++;
+   details.push(`<div class="v6-results"><strong>${i+1}. Avoin vastaus – arvioi malliin verraten</strong><p><b>Oma vastauksesi:</b> ${escV(response)}</p><p><b>Mallivastaus:</b> ${escV(q.answer)}</p></div>`);
+   continue;
+  }
+  let correct=false;
+  if(q.type==='single'||q.type==='multiple'){
+   const vals=Array.from(document.querySelectorAll(`input[name="v6s${i}"]:checked`)).map(el=>Number(el.value));
+   if(!vals.length){$v('#v6Feedback').innerHTML='<div class="v6-notice error">Vastaa kaikkiin monivalintoihin.</div>';return}
+   correct=vals.slice().sort().join(',')===q.correct.slice().sort().join(',');
+  }else if(q.type==='numeric'){
+   const raw=$v(`[data-num="${i}"]`)?.value.trim().replace(',','.');
+   if(!raw||!Number.isFinite(Number(raw))){$v('#v6Feedback').innerHTML='<div class="v6-notice error">Tarkista kaikki numeeriset vastaukset.</div>';return}
+   correct=Math.abs(Number(raw)-Number(String(q.answer).replace(',','.')))<=Number(q.tolerance||0)+1e-9;
+  }else if(q.type==='ordering')correct=studentAnswers[i].every((v,j)=>v===j);
+  total++;if(correct)earned++;
+  const expected=q.type==='numeric'?q.answer:q.type==='ordering'?q.options.map((x,j)=>(j+1)+'. '+x).join(' → '):q.options.filter((_,j)=>q.correct.includes(j)).join('; ');
+  details.push(`<div class="v6-results"><strong>${i+1}. ${correct?'Oikein':'Ei oikein'}</strong><p class="v6-muted">${correct?'Hyvä.':'Oikea ratkaisu: '+escV(expected)}</p></div>`);
+ }
+ const pc=total?Math.round(100*earned/total):null;
+ $v('#v6Feedback').innerHTML=`<div class="v6-results"><div class="v6-score">${pc===null?'Avoimet vastaukset':pc+' %'}</div><p>${earned} / ${total} automaattisesti arvioitavaa tehtävää oikein. ${manual?'Lisäksi '+manual+' avointa vastausta, jotka verrataan itse malliin.':''}</p><p class="v6-muted">Tulosta ei lähetetty palvelimelle eikä julkaistu muiden nähtäväksi.</p></div>${details.join('')}`;
+ $v('#v6Finish').disabled=true;
+ $v('#v6Feedback').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function decorateExisting(path){
+ if(path==='/kokeet'){
+  const shell=$v('#main .shell');if(shell&&!$v('#v6JoinCallout')){
+   const section=document.createElement('div');section.id='v6JoinCallout';section.className='v6-pane';section.style.margin='20px auto 0';section.innerHTML=`<div class="v6-kicker">KOULUTTAJAN JULKAISEMAT KOKEET</div><div class="v6-line"><div><h2 style="margin:6px 0">Liity kokeeseen</h2><p class="v6-muted" style="margin:0">Saitko kouluttajalta liittymiskoodin? Avaa koe tästä.</p></div><button class="v6-red" data-go="/liity">Syötä koodi →</button></div>`;
+   // Insert after introductory header, before existing tests.
+   const first=$v('#main .page-head');first?.after(section);
+  }
+ }
+ if(path==='/kouluttajalle'){
+  const first=$v('#main .page-head');if(first&&!$v('#v6TeacherCallout')){
+   const section=document.createElement('div');section.id='v6TeacherCallout';section.className='v6-pane shell';section.style.cssText='margin:24px auto 0';section.innerHTML=`<div class="v6-kicker">UUSI TYÖKALU / KOEKONE</div><div class="v6-line"><div><h2 style="margin:5px 0">Luo oma harjoituskoe</h2><p class="v6-muted">Monivalinnat, järjestely, laskut ja avoimet perustelut. Julkaise kokeelle liittymiskoodi.</p></div><button class="v6-red" data-go="/koeluoja">Avaa koekone →</button></div>`;first.after(section);
+  }
+ }
+ if(path==='/tietosuoja'&&API){
+   const target=$v('#main .v5-panel');
+   if(target){const info=document.createElement('div');info.className='v6-notice';info.innerHTML='<strong>Kouluttajan julkaistut kokeet</strong><p>Lyhyillä liittymiskoodeilla julkaistut kokeet säilytetään Cloudflare Workers KV -palvelussa 14 päivän ajan. Kokeet ovat koodin tietävien saatavilla. Osallistujien vastauksia, nimiä tai pisteitä ei lähetetä Valmiron koepalveluun. Cloudflare voi käsitellä teknisiä verkkoyhteystietoja, kuten IP-osoitteita, palvelun toiminnassa ja turvallisuuden varmistamisessa.</p>';target.appendChild(info)}
+ }
+ if(path==='/tietoa'){
+  // Siivotaan käyttäjän huomaama asiayhteyteen sopimaton maininta.
+  const body=$v('#main');if(body)body.innerHTML=body.innerHTML.replace(/ Älä lähetä potilastietoja tai muita arkaluonteisia henkilötietoja\./g,'');
+ }
+}
+// Parannetaan nykyinen suostumusikkuna ilman että sen suostumuslogiikkaa muutetaan.
+const ck=$v('#valmiroCookieScreen');
+if(ck){
+ ck.removeAttribute('aria-modal');ck.setAttribute('role','region');
+ const title=$v('#cookieTitle',ck);if(title)title.textContent='Valmiron tallennusasetukset';
+ const desc=$v('.cookie-panel > p',ck);if(desc)desc.innerHTML='Haluatko säilyttää kurssiedistymisesi ja suunnitelmat tässä selaimessa? Voit myös jatkaa tallentamatta. <strong>Ei mainos- tai analytiikkaevästeitä.</strong>';
+ const yes=$v('#allowStorage',ck),no=$v('#declineStorage',ck);if(yes)yes.textContent='Salli tallennus';if(no)no.textContent='Vain välttämättömät';
+ no?.addEventListener('click',()=>{try{localStorage.removeItem(DRAFT_KEY)}catch{}});
+}
+loadDraft();
+const oldRoute=route;
+window.removeEventListener('hashchange',oldRoute);
+route=function(){
+ const raw=location.hash.slice(1)||'/';const path=raw.split('?')[0].replace(/\/+$/,'')||'/';
+ if(path==='/koeluoja')editorPage();
+ else if(path==='/liity')joinPage();
+ else{oldRoute();decorateExisting(path);}
+ document.title='Valmiro | '+(path==='/koeluoja'?'Koekone':path==='/liity'?'Liity kokeeseen':'Oppimisympäristö');
+ window.scrollTo({top:0,behavior:'instant'});
+};
+window.addEventListener('hashchange',route);
+const navEl=$v('.drawer-foot');
+if(navEl){const b=document.createElement('button');b.setAttribute('data-go','/koeluoja');b.innerHTML='11 <span>Luo oma koe</span>';navEl.before(b);}
+const footer=$v('.footer > div:nth-child(2)');
+if(footer){const a=document.createElement('button');a.setAttribute('data-go','/liity');a.textContent='Liity kokeeseen';footer.appendChild(a)}
+route();
+})();
+
+</script>
 </body>
 </html>
