@@ -481,5 +481,488 @@ function aboutScreen(){root.innerHTML=head('TIETOA VALMIROSTA','Oppimista paloku
 $('#year').textContent=new Date().getFullYear();route();
 
 </script>
+<script>
+/* VALMIRO 5.0 - lisäosa Valmiro 4.0 -sivulle.
+   Ei kirjautumista, analytiikkaa eikä ulkoisia kirjastoja. */
+(()=>{
+'use strict';
+const css = String.raw`
+:root{--red:#ed5258;--green:#77dcb4}
+.footer button:hover,.footer button:focus-visible{color:#ff666e!important;text-decoration:underline;text-underline-offset:5px}
+.card-banner{position:relative;isolation:isolate}
+.card-banner strong{display:none!important}
+.card-banner .course-svg{width:51px;height:51px;stroke:#ff858a;stroke-width:1.65;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.card-banner .course-decal{display:flex;align-items:center;justify-content:center;width:70px;height:70px;background:#ed525811;border:1px solid #ed525844;border-radius:18px}
+.enhance-hero{position:relative;overflow:hidden;isolation:isolate}
+.enhance-hero:before{content:"";position:absolute;inset:-30%;z-index:-1;background:radial-gradient(circle at 78% 40%,#e5484d1b,transparent 34%),repeating-radial-gradient(ellipse at 90% 40%,transparent 0 44px,#ffffff04 45px 46px);animation:valmiroFloat 32s ease-in-out infinite alternate;pointer-events:none}
+.enhance-hero:after{content:"";position:absolute;bottom:-75px;right:-50px;width:480px;height:220px;border-radius:50%;filter:blur(66px);background:#d63c4230;pointer-events:none;animation:valmiroPulse 9s ease-in-out infinite alternate}
+@keyframes valmiroFloat{to{transform:translate(-3%,3%) scale(1.07) rotate(3deg)}}
+@keyframes valmiroPulse{to{opacity:.24;transform:translateY(-18px)}}
+.glass-page{background:linear-gradient(120deg,#111e31 5%,#152840 72%,#101b2d);border-bottom:1px solid #2b4560;position:relative;overflow:hidden}
+.glass-page:after{content:"";position:absolute;right:-10%;top:-90%;height:480px;width:760px;border:1px solid #ffffff12;border-radius:50%;box-shadow:0 0 0 45px #ffffff04,0 0 0 120px #ed525806;animation:valmiroFloat 27s ease-in-out infinite alternate;pointer-events:none}
+.v5-layout{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start}
+.v5-panel{background:#111e2d;border:1px solid #2c415a;border-radius:17px;padding:25px;box-shadow:0 18px 48px #0002;min-width:0}
+.v5-panel h2{line-height:1.25;margin:8px 0 16px}
+.v5-panel h3{line-height:1.35}
+.v5-input,.v5-textarea,.v5-select{background:#0c1726;border:1px solid #3b5068;color:#eef4fc;border-radius:10px;padding:12px 13px;width:100%;font:inherit;min-width:0}
+.v5-textarea{min-height:115px;resize:vertical;line-height:1.65}
+.v5-textarea.feedback-area{min-height:190px}
+.v5-input:focus,.v5-textarea:focus,.v5-select:focus{outline:2px solid #f47d83;outline-offset:1px}
+.v5-label{display:block;color:#c5d2e2;font-size:12px;font-weight:750;margin:15px 0 6px}
+.v5-muted{color:#b1c1d1;font-size:13px}
+.v5-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.v5-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.v5-rule{border:0;border-top:1px solid #33465e;margin:25px 0}
+.v5-list{display:grid;gap:12px}
+.v5-card{background:#16263a;border:1px solid #30465d;border-radius:13px;padding:17px;min-width:0}
+.v5-card h3{margin:0 0 6px}
+.v5-choice{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:#16283d;border:1px solid #37506d;color:#edf4ff;padding:14px 16px;margin:8px 0;border-radius:12px;font:inherit;cursor:pointer}
+.v5-choice:hover:not(:disabled){background:#1d354f;border-color:#5a7290}
+.v5-choice.selected{border-color:#ed666e;background:#442731}
+.v5-feedback{background:#172d39;border:1px solid #416e68;padding:17px;border-radius:13px;margin:18px 0;line-height:1.65}
+.v5-feedback.warn{background:#362831;border-color:#91515a}
+.v5-chip{display:inline-flex;padding:5px 10px;border:1px solid #ed52586c;border-radius:30px;background:#ed525815;color:#ff9ca0;font-size:11px;font-weight:850;letter-spacing:.6px}
+.v5-stat{padding:15px;background:#101e30;border:1px solid #30445e;border-radius:12px}
+.v5-stat strong{display:block;font-size:28px;color:#fff}
+.v5-stat small{color:#b1c1d1}
+.v5-steps{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}
+.v5-steps span{width:37px;height:6px;background:#334862;border-radius:7px}
+.v5-steps span.done{background:#e5484d}
+.v5-table{width:100%;border-collapse:collapse;font-size:14px}
+.v5-table th,.v5-table td{border-bottom:1px solid #374c63;padding:11px;text-align:left}
+.v5-table th{color:#a9b9cc;font-weight:700}
+.v5-bad{color:#ff9196}
+.v5-good{color:#8cdebc}
+.cookie-screen{position:fixed;inset:0;background:#010713b8;z-index:200;display:grid;place-items:end center;padding:20px;backdrop-filter:blur(4px)}
+.cookie-screen[hidden]{display:none}
+.cookie-panel{width:min(850px,100%);background:#122238;border:1px solid #4c627c;box-shadow:0 20px 70px #0009;border-radius:21px;padding:26px;max-height:min(85dvh,720px);overflow:auto}
+.cookie-panel h2{margin:4px 0 9px;color:#fff;font-size:25px}
+.cookie-panel p{color:#c4d0df;margin:0 0 17px;font-size:14px}
+.cookie-panel .v5-row .btn{flex:1;min-width:150px}
+.cookie-panel .v5-switch{display:flex;align-items:center;justify-content:space-between;gap:20px;background:#172c43;border:1px solid #374f69;border-radius:13px;padding:17px;margin:17px 0}
+.cookie-panel input[type=checkbox]{width:23px;height:23px;accent-color:#ed5258}
+.v5-smallbtn{font:inherit;background:transparent;border:1px solid #435c76;color:#dbe6f4;padding:7px 11px;border-radius:8px;cursor:pointer}
+.v5-smallbtn:hover{background:#29405a}
+.v5-print-document{display:none}
+.v5-seal{display:inline-block;background:#321f29;color:#ff9b9f;padding:7px 12px;border-radius:9px;font-weight:800;font-size:11px;letter-spacing:1.2px}
+@media(max-width:920px){.v5-layout{grid-template-columns:1fr}}
+@media(max-width:630px){.v5-grid{grid-template-columns:1fr}.v5-panel{padding:18px}.v5-table{font-size:12px}.v5-table th,.v5-table td{padding:7px}.cookie-panel{padding:19px}.cookie-panel .v5-row{display:flex;flex-direction:column}.cookie-panel .v5-row .btn{width:100%;flex:auto}}
+@media(prefers-reduced-motion:reduce){.enhance-hero:before,.enhance-hero:after,.glass-page:after{animation:none}}
+@media print{
+ body.v5-printing{background:#fff!important;color:#111!important}
+ body.v5-printing>*:not(#valmiroPrint){display:none!important}
+ body.v5-printing #valmiroPrint{display:block!important;background:#fff!important;color:#111!important;font:11pt/1.5 Arial,sans-serif}
+ #valmiroPrint .print-page{page-break-after:always;break-after:page;padding:8mm 4mm}
+ #valmiroPrint h1{font-size:28pt;line-height:1.1;color:#111}
+ #valmiroPrint h2{font-size:17pt;color:#111;margin:15px 0}
+ #valmiroPrint p,#valmiroPrint li{color:#222}
+ #valmiroPrint .print-card{border:1.5pt solid #111;padding:14px;margin:12px 0;break-inside:avoid}
+ #valmiroPrint .print-answer{border-bottom:1px solid #888;min-height:88px;margin:10px 0}
+ #valmiroPrint .print-answer.big{min-height:160px}
+ #valmiroPrint .print-meta{border-top:3pt solid #d64248;margin:20px 0;padding-top:15px}
+ #valmiroPrint table{border-collapse:collapse;width:100%;font-size:10pt}
+ #valmiroPrint td,#valmiroPrint th{border:1px solid #666;padding:8px}
+}
+`;
+const style=document.createElement('style');style.textContent=css;document.head.appendChild(style);
+const el=(tag,attrs={})=>{const n=document.createElement(tag);Object.entries(attrs).forEach(([k,v])=>{if(k==='text')n.textContent=v;else n.setAttribute(k,v)});return n;};
+const STORAGE_CHOICE='valmiro_storage_choice_v5';
+const STORAGE_PLANS='valmiro_plans_v5';
+const STORAGE_QUIZ='valmiro_tasks_v5';
+let storeChoice=null;
+try{const stored=localStorage.getItem(STORAGE_CHOICE);if(stored==='yes'||stored==='no')storeChoice=stored;}catch{}
+// Valinnainen oppimisen tallennus: estetään alkuperäisen sovelluksen tallennus ilman lupaa.
+const originalSave=save;
+save=function(){if(storeChoice==='yes')originalSave();};
+if(storeChoice!=='yes')data=empty();
+const originalLoad=load;
+load=function(){return storeChoice==='yes'?originalLoad():empty();};
+function storeGet(key,fallback){if(storeChoice!=='yes')return fallback;try{return JSON.parse(localStorage.getItem(key))||fallback}catch{return fallback}}
+function storeSet(key,value){if(storeChoice!=='yes')return;try{localStorage.setItem(key,JSON.stringify(value))}catch{}}
+function clearOptional(){try{localStorage.removeItem(STORAGE);localStorage.removeItem(STORAGE_PLANS);localStorage.removeItem(STORAGE_QUIZ)}catch{}data=empty();plans=[];tasksDone={};}
+
+// Virallisen koulutusjärjestelmän aiheisiin sopivia itsenäisiä teoriajaksoja.
+const additions={
+ viestiliikenne:[
+  ['Harjoituksen viestiliikennesuunnitelma','Toimiva harjoitus alkaa selkeistä viestintävastuista.',[
+   ['Harjoituskanavat','Kouluttaja määrittelee ennakolta, mitä laitteita ja harjoitukseen sallittuja kanavia käytetään. Osallistujan ei pidä vaihtaa puheryhmää oma-aloitteisesti.'],
+   ['Ilmoitusten kohdistaminen','Harjoitukseen voi sisältyä erillinen johto, yksiköt ja viestit. Jokainen rooli tietää, keneen ottaa yhteyttä ja mitä tietoa on tarkoitus välittää.'],
+   ['Purku','Harjoituksen lopuksi arvioidaan viestien selkeyttä, onnistuneita varmistuksia ja tiedonkulun viiveitä.']],
+   'Suunnittele neljän yksikön radiokierros, jossa jokaiselle tulee vähintään yksi muuttuva tieto.'],
+  ['Viestiliikenteen virheanalyysi','Kriittisten virheiden ymmärtäminen vaatii viestin kokonaisuuden arviointia.',[
+   ['Vastaanottajan virhe','Viesti voi olla sanamuodoltaan täsmällinen mutta kohdistua väärälle vastaanottajalle. Tarkista tunnukset ennen toimintaa.'],
+   ['Ymmärtämisen virhe','Epäselvän osan toistamisen pyytäminen vähentää virhetulkintaa. Kuultua ei pidä täydentää itse.'],
+   ['Toimintapalaute','Kirjaa ensin havaitut sanat tai tapahtumat, vasta sitten arvio siitä, mitä olisi pitänyt tehdä toisin.']],
+   'Kirjoita kuvitteellinen väärin ymmärretty radioviesti ja selitä, miten virhe olisi estetty.']
+ ],
+ riskit:[
+  ['Kouluttajan riskimatriisi','Riskin vakavuuden lisäksi kannattaa tarkastella todennäköisyyttä ja epävarmuutta.',[
+   ['Arviointiasteikot','Riskimatriisi on apuväline eikä suoraan vastaa hyväksyttävää riskitasoa. Arviointikriteerit määritellään harjoituksen järjestäjän mukaan.'],
+   ['Ehkäisykeinot','Vaaratekijä voidaan poistaa, eristää, korvata turvallisemmalla toimintatavalla tai hallita suojauksin.'],
+   ['Vastuut','Kouluttaja nimeää kuka tarkistaa kaluston, kuka ohjaa osallistujia ja kuka voi keskeyttää harjoitteen.']],
+   'Tee riskitaulukko kolmesta vaaratekijästä, niiden seurauksista ja ehkäisevistä toimista.'],
+  ['Jälkipuinti ja turvallisuushavainnot','Turvallisuus syntyy avoimesta palautteesta.',[
+   ['Faktat ensin','Kerro missä ja milloin havainto tehtiin. Erottele nähty tapahtuma ja oma tulkinta.'],
+   ['Korjaavat toimet','Valitse konkreettinen toimenpide, vastuuhenkilö ja hetki, jolloin toteutus tarkistetaan.'],
+   ['Turvallisuuskulttuuri','Palautteen tarkoitus ei ole etsiä syyllistä, vaan auttaa tekemään seuraavasta harjoituksesta turvallisempi.']],
+   'Laadi anonyymi läheltä piti -tilanteen raporttipohja.']
+ ],
+ ensiapu:[
+  ['Ensiaputilanteen viestintä','Avun hälyttäminen ja tilannetietojen välittäminen ovat osa turvallista auttamista.',[
+   ['Havaintoketju','Kerro mitä näit, mitä tapahtui ja mitä havaintoja teit henkilön voinnista. Älä esitä omaa diagnoosiarviota varmana tietona.'],
+   ['Sijainnin vahvistaminen','Tarkka osoite, tunnistettava maamerkki ja opastaja voivat täydentää toisiaan.'],
+   ['Ohjeiden noudattaminen','112-päivystäjän antamat ohjeet ohjaavat toimintaa hätätilanteessa.']],
+   'Harjoittele 30 sekunnin tilanneselostus, josta kuuluvat paikka, havainto ja muuttuva tieto.'],
+  ['Jälkiseuranta ja oppiminen','Toisen auttaminen vaatii myös malttia.',[
+   ['Olosuhteet','Autettavan vointi voi muuttua nopeasti. Seuranta ja muutosten kertominen ovat tärkeitä.'],
+   ['Auttajien yhteistyö','Tehtävät voidaan jakaa esimerkiksi yhteydenpitoon, opastamiseen ja välineiden hakemiseen.'],
+   ['Käytännön osaaminen','Verkkokurssi ei korvaa ohjattua ensiapu- ja elvytysharjoittelua.']],
+   'Miten ohjeistaisit toista auttajaa kertomaan havainnot ensihoitajalle?']
+ ],
+ paloturvallisuus:[
+  ['Asumisen erityiset riskit','Tulipalon vaaran lähteet vaihtelevat rakennuksen ja toiminnan mukaan.',[
+   ['Keittiöt','Valvomaton ruoanlaitto ja tavarat lieden läheisyydessä lisäävät paloriskiä.'],
+   ['Sähkölaitteet','Rikkinäisiä laitteita ei tule käyttää; lataus ja säilytys tehdään valmistajan ohjeiden mukaisesti.'],
+   ['Ennakointi','Havaitut puutteet korjataan turvallisesti ennen vahinkoa.']],
+   'Laadi kodin turvallisuuskierroksen viiden kohdan tarkistuslista.']
+ ],
+ poistuminen:[
+  ['Poistumisen erityistilanteet','Turvallinen reitti riippuu savusta, rakennuksesta ja tilanteesta.',[
+   ['Savu porraskäytävässä','Savuiseen porraskäytävään ei mennä. Noudata 112:n ja turvallisuusohjeiden ohjeita.'],
+   ['Kokoontuminen','Kokoontumispaikka auttaa selvittämään, ketkä ovat poistuneet.'],
+   ['Harjoittelu','Poistumisreittejä voidaan harjoitella turvallisesti kouluttajan kanssa ilman tulen tai savun käyttöä.']],
+   'Tee reittisuunnitelma, jossa ensisijainen poistumisreitti on suljettu.']
+ ],
+ varautuminen:[
+  ['Tiedon luotettavuus häiriössä','Häiriötilanteessa tieto voi muuttua nopeasti.',[
+   ['Viranomaisohje','Tarkista viralliset tiedotuskanavat ja soveltuvat ohjeet.'],
+   ['Huhujen välttäminen','Älä esitä vahvistamatonta tietoa varmana.'],
+   ['Oma toiminta','Arvioi oman tilanteesi mukaan, mitkä varautumistoimet ovat olennaisimpia.']],
+   'Kirjoita harjoitustiedote, jossa selkeästi erotetaan vahvistettu tieto ja epävarmuus.']
+ ],
+ kalusto:[
+  ['Kalustokirjaukset ja tarkistaminen','Kaluston hallinta vaatii tarkistettavia tietoja.',[
+   ['Inventointi','Merkitse välineen nimi, määrä, sijainti ja kunto.'],
+   ['Vauriot','Poista epävarma tai vaurioitunut kalusto käytöstä ja ilmoita vastuuhenkilölle.'],
+   ['Harjoituksen jälkeen','Varmista, että harjoituskäytössä olleet tavarat palautetaan sovitusti.']],
+   'Suunnittele kirjallinen tarkistuslista viidelle välineelle.']
+ ],
+ organisaatio:[
+  ['Nuorten koulutuspolut 2026','Palokuntanuorten uudistettu koulutusjärjestelmä sisältää ikä- ja osaamistasoihin perustuvia kokonaisuuksia.',[
+   ['Soveltava taso','13–15-vuotiaille suunnatut aihealueet ovat rakennettu ympäristö, liikenne ja maasto.'],
+   ['Syventävä taso','15–18-vuotiailla on mahdollisuuksia edetä esimerkiksi kouluttaja-, pelastaja- tai vaikuttajapolulle.'],
+   ['Oma kiinnostus','Koulutuskokonaisuus kannattaa valita nuoren motivaation, ohjauksen ja järjestäjän edellytysten perusteella.']],
+   'Vertaa kahta koulutuspolkua ja pohdi, miten ne tukevat palokunnan toimintaa.']
+ ]
+};
+for(const course of COURSES){
+ const extras=additions[course.id]||[];
+ for(const [title,lead,sections,task] of extras)course.units.push(lesson(title,lead,sections,task));
+}
+
+const ICON_PATHS={
+ riskit:'<path d="M12 2l9 4v6c0 5-3 8-9 10-6-2-9-5-9-10V6l9-4z"/><path d="M12 7v6m0 4h.01"/>',
+ viestiliikenne:'<path d="M3 11a12 12 0 0 1 18 0M6 14a8 8 0 0 1 12 0M9 17a4 4 0 0 1 6 0M12 20v2"/>',
+ turvallisuus:'<path d="M12 2l9 4v6c0 5-3 8-9 10-6-2-9-5-9-10V6l9-4z"/><path d="M12 7v6m0 4h.01"/>',
+ ensiapu:'<rect x="3" y="6" width="18" height="15" rx="2"/><path d="M9 6V4h6v2m-3 4v7m-3.5-3.5h7"/>',
+ paloturvallisuus:'<path d="M12 22c-5 0-8-4-8-9 0-4 4-7 5-11 1 3 4 4 4 9 2-2 3-4 3-6 3 4 5 7 5 11 0 4-4 6-9 6z"/>',
+ poistuminen:'<path d="M4 4h12v16H4zM16 12h6m-3-3 3 3-3 3M9 10l3 2-3 2"/>',
+ varautuminen:'<path d="M12 2l8 5v6c0 5-3 8-8 9-5-1-8-4-8-9V7l8-5z"/><path d="M9 13l2 2 4-5"/>',
+ kalusto:'<path d="M7 2v5m10-5v5M5 7h14v14H5zM8 12h8M8 16h5"/>',
+ organisaatio:'<circle cx="12" cy="5" r="3"/><circle cx="5" cy="18" r="3"/><circle cx="19" cy="18" r="3"/><path d="M12 8v4M7 15l5-3 5 3"/>'
+};
+function decorate(){
+ document.querySelectorAll('.card-banner').forEach(b=>{
+  if(b.querySelector('.course-decal'))return;
+  const text=b.textContent.toLowerCase();
+  const course=COURSES.find(c=>text.includes(c.code.toLowerCase())||text.includes(c.group.toLowerCase()));
+  if(!course)return;
+  const wrap=el('div',{class:'course-decal'});
+  wrap.innerHTML=`<svg class="course-svg" viewBox="0 0 24 24" aria-hidden="true">${ICON_PATHS[course.id]||ICON_PATHS.turvallisuus}</svg>`;
+  b.prepend(wrap);
+ });
+ document.querySelectorAll('.page-head').forEach(h=>h.classList.add('enhance-hero','glass-page'));
+ document.querySelectorAll('.hero').forEach(h=>h.classList.add('enhance-hero'));
+}
+const originalRoute=route;
+const originalHome=home;
+const originalInstructor=instructorScreen;
+const originalAbout=aboutScreen;
+// Pidetään olemassa olevat kurssit ja tilanteet; lisätään uudet näkymät.
+route=function(){
+ let pathname='';try{pathname=decodeURIComponent(location.hash.slice(1)||'/').split('?')[0].replace(/\/+$/,'')||'/';}catch{pathname='/';}
+ if(pathname==='/kokeet')examsHub();
+ else if(pathname==='/suunnittelija')plannerScreen();
+ else if(pathname==='/tietosuoja')privacyScreen();
+ else if(pathname==='/evasteet')cookieInfoScreen();
+ else if(pathname==='/harjoitukset')appliedScreen();
+ else if(pathname==='/tilasto')statScreen();
+ else originalRoute();
+ decorate();
+ document.title='Valmiro | '+(pathname==='/'?'Etusivu':pathname.slice(1));
+ window.scrollTo({top:0,behavior:'instant'});
+};
+window.removeEventListener('hashchange',originalRoute);
+window.addEventListener('hashchange',route);
+
+function pageIntro(kicker,title,text){return `<div class="page-head glass-page enhance-hero"><div class="shell"><div class="eyebrow">${esc(kicker)}</div><h1>${esc(title)}</h1><p>${esc(text)}</p></div></div>`;}
+const infoSafe=s=>esc(String(s||''));
+const tutorialLink='<a href="https://www.palokuntaan.fi/palokuntanuorten-koulutusuudistus" target="_blank" rel="noopener noreferrer">SPEK: palokuntanuorten koulutusuudistus</a>';
+const sourceItems=[
+ ['Palokuntanuorten koulutusjärjestelmä','https://www.palokuntaan.fi/palokuntanuorten-koulutusuudistus'],
+ ['SPEK: toiminta tulipalossa','https://www.spek.fi/turvallisuus/paloturvallisuus/toimintaohjeet-tulipalossa/'],
+ ['Punainen Risti: tajuttoman ensiapu','https://www.punainenristi.fi/ensiapu/ensiapuohjeet/tajuttoman-ensiapu/tajuttoman-aikuisen-ensiapu/'],
+ ['Traficom: evästeet','https://www.kyberturvallisuuskeskus.fi/fi/viestintaverkkojen-ja-palveluiden-saantely/evasteet']
+];
+const sourcesHtml=()=>sourceItems.map(([name,url])=>`<li><a target="_blank" rel="noopener noreferrer" href="${url}">${esc(name)} ↗</a></li>`).join('');
+
+// TODO/INFO: nämä kuvitteelliset luvut eivät ole PRONTO-aineistoa.
+const synthetic=[
+ {year:'Vuosi A',calls:164,training:41,incidents:23},
+ {year:'Vuosi B',calls:188,training:53,incidents:19},
+ {year:'Vuosi C',calls:177,training:49,incidents:17},
+];
+
+/* Seuraavat moduulit lisätään tiedoston jatko-osassa. */
+
+/* KOKEET JA SOVELTAVAT TEHTÄVÄT */
+const appliedTasks=[
+ {id:'viestit',title:'Radioviestin rakenne',type:'order',topic:'Viestiliikenne',description:'Järjestä kuvitteellisen harjoitusviestin osat luettavaan järjestykseen.',
+  parts:['Harjoitusjohto, yksikkö 131','Harjoitusjohto kuulee','131 harjoitusalueella, odotamme seuraavaa ohjetta','Vastaanotettu'],explain:'Kutsu kohdennetaan ensin, vastaanottaja antaa puheenvuoron, yksikkö välittää tiedon ja vastaanottaja vahvistaa vastaanoton.'},
+ {id:'riskit',title:'Riskienhallinnan keinot',type:'multi',topic:'Turvallisuus',description:'Valitse kaikki sellaiset toimenpiteet, jotka ovat tilanteessa perusteltuja.',
+  question:'Harjoitusrastilla huomataan vaurioitunut käsityökalu. Mitkä toimet auttavat hallitsemaan riskiä?',
+  answers:['Työkalu poistetaan käytöstä odottamaan vastuuhenkilön arviota.','Kerrotaan havainnosta muille kouluttajille.','Korjataan työkalu itse ilman valtuutusta, jotta harjoitus jatkuu.','Tarkistetaan, onko vastaavia puutteita muissa välineissä.'],right:[0,1,3],explain:'Turvallinen ratkaisu on poistaa vaurioitunut väline käytöstä, ilmoittaa havainnosta ja tarvittaessa tarkistaa muu välineistö.'},
+ {id:'prosentti',title:'Harjoitustilastojen vertailu',type:'number',topic:'Tilastot',description:'Analysoi harjoituskäyttöön tarkoitettua aineistoa.',
+  question:'Kuinka monta prosenttia harjoituskirjausten määrä muuttui vuodesta A (164) vuoteen B (188)? Pyöristä yhden desimaalin tarkkuuteen.',
+  answer:14.6,explain:'(188 − 164) ÷ 164 × 100 = noin 14,6 %. Aineisto on keksittyä harjoitusdataa, ei Suomen pelastustoimen tilasto.'},
+ {id:'perustelu',title:'Kirjallinen päätösperustelu',type:'essay',topic:'Tilannearvio',description:'Muodosta kirjallinen perustelu kouluttajan arviointikriteereihin verraten.',
+  question:'Nuorten viestiliikenneharjoituksessa kaksi ryhmää ilmoittaa eri kokoontumispaikan. Kirjoita vähintään neljä virkettä: miten tunnistat epävarmuuden, varmistat tiedon ja estät virheen leviämisen?',
+  rubric:['Erottaa havainnon ja epävarman tulkinnan','Varmistaa toimintaan vaikuttavan tiedon','Kertoo muutoksesta asianmukaisesti','Ei anna itsenäisiä tehtäväkäskyjä ilman valtuutta']},
+ {id:'priorisointi',title:'Järjestä turvalliset toimet',type:'order',topic:'Ensiapu',description:'Järjestä toimintavaiheet kuvitteellisessa kiireellistä apua vaativassa tilanteessa.',
+  parts:['Arvioi, onko tapahtumapaikka turvallinen lähestyä.','Tarkista henkilön reagointi.','Jos henkilö ei reagoi, soita 112 ja noudata päivystäjän ohjeita.','Arvioi normaali hengitys päivystäjän ohjeen mukaan ja toimi ohjeiden mukaisesti.'],
+  explain:'Tämä kuvaa pääpiirteistä etenemisajattelua, ei korvaa päivystäjän tai ensiapukouluttajan ohjetta.'}
+];
+let tasksDone=storeGet(STORAGE_QUIZ,{});
+let currentTask=null,taskAnswer=null,taskOrder=[],taskMarked=false;
+function examsHub(){
+ root.innerHTML=pageIntro('OSAAMISEN ARVIOINTI','Kokeet ja tehtävät','Kurssikokeiden lisäksi harjoittele viestien rakentamista, usean oikean valintaa, tilastojen tulkintaa ja perustelujen kirjoittamista.')+
+ `<section class="section shell"><div class="eyebrow">KURSSIEN LOPPUKOKEET</div><h2 class="section-heading">Laajat tietokokeet</h2><div class="card-grid">${COURSES.map(c=>`<article class="v5-card"><span class="v5-chip">${c.quiz.length} kysymystä</span><h3>${esc(c.title)}</h3><p class="v5-muted">Kysymysten ja vaihtoehtojen järjestys vaihtuu. Läpäisyraja 80 %.</p><button class="btn btn-red btn-small" data-go="/kurssi/${esc(c.id)}/koe">Avaa loppukoe →</button></article>`).join('')}</div><hr class="v5-rule"><div class="eyebrow">SOVELTAVAT TEHTÄVÄT</div><h2 class="section-heading">Ei pelkkää monivalintaa</h2><div class="card-grid">${appliedTasks.map(t=>`<article class="v5-card"><span class="v5-chip">${esc(t.topic)}</span><h3>${esc(t.title)}</h3><p class="v5-muted">${esc(t.description)}</p><button class="btn btn-muted btn-small" data-task="${t.id}">Avaa tehtävä →</button></article>`).join('')}</div></section>`;
+ $$('[data-task]').forEach(btn=>btn.addEventListener('click',()=>showTask(btn.dataset.task)));
+}
+function appliedScreen(){examsHub()}
+function statScreen(){showTask('prosentti')}
+function showTask(id){
+ currentTask=appliedTasks.find(t=>t.id===id);
+ if(!currentTask)return;
+ taskAnswer=null;taskMarked=false;
+ taskOrder=currentTask.type==='order'?Array.from(currentTask.parts.keys()).reverse():[];
+ drawTask();
+}
+function drawTask(){
+ const t=currentTask;
+ root.innerHTML=pageIntro('SOVELTAVA TEHTÄVÄ',t.title,t.description)+`<section class="section shell"><div class="v5-panel" style="max-width:900px;margin:auto"><button class="btn btn-muted btn-small" data-go="/kokeet">← Kaikki kokeet</button><hr class="v5-rule"><span class="v5-chip">${esc(t.topic)}</span><h2>${esc(t.question||t.title)}</h2><div id="taskBody"></div><div id="taskResult" aria-live="polite"></div></div></section>`;
+ const area=$('#taskBody');
+ if(t.type==='order'){
+  area.innerHTML=`<p class="v5-muted">Siirrä rivejä nuolipainikkeilla. Sama toiminto toimii myös puhelimessa.</p><div id="ordered"></div><button id="submitTask" class="btn btn-red">Tarkista järjestys</button>`;
+  drawOrder(t);
+ }else if(t.type==='multi'){
+  area.innerHTML=`<p class="v5-muted">Valitse yksi tai useampi. Oikeita vastauksia voi olla useita.</p>${t.answers.map((a,i)=>`<label class="v5-choice"><input type="checkbox" value="${i}" class="multiAnswer" style="width:19px;height:19px;accent-color:#ed5258;margin-top:4px"><span>${esc(a)}</span></label>`).join('')}<button id="submitTask" class="btn btn-red">Tarkista valinnat</button>`;
+ }else if(t.type==='number'){
+  area.innerHTML=`<div class="v5-card"><span class="v5-chip">KUVITTEELLINEN AINEISTO</span><div style="margin:18px 0;display:grid;gap:12px">${synthetic.map(y=>`<div class="v5-row"><span style="width:70px">${y.year}</span><div style="flex:1;height:14px;background:#293c51;border-radius:15px;overflow:hidden"><div style="height:100%;width:${Math.round(y.calls/200*100)}%;background:linear-gradient(90deg,#d53c46,#ff858a);border-radius:15px"></div></div><b>${y.calls}</b></div>`).join('')}</div><table class="v5-table"><thead><tr><th>Vuosi</th><th>Harjoituskirjauksia</th><th>Muita merkintöjä</th></tr></thead><tbody>${synthetic.map(y=>`<tr><td>${y.year}</td><td>${y.calls}</td><td>${y.incidents}</td></tr>`).join('')}</tbody></table><small class="v5-muted">Harjoitusluvut eivät perustu todelliseen PRONTO-aineistoon.</small></div><label class="v5-label" for="statAnswer">Vastauksesi prosentteina</label><input id="statAnswer" class="v5-input" type="text" inputmode="decimal" placeholder="Esim. 14,6"><p><button id="submitTask" class="btn btn-red">Tarkista lasku</button></p>`;
+ }else if(t.type==='essay'){
+  area.innerHTML=`<label class="v5-label" for="essayAnswer">Perustele ratkaisu</label><textarea class="v5-textarea" id="essayAnswer" style="min-height:230px" placeholder="Kirjoita vähintään neljä virkettä…"></textarea><p class="v5-muted">Teksti pysyy vain tässä näkymässä, ellet erikseen kopioi sitä. Automaattista arvosanaa ei anneta.</p><button id="submitTask" class="btn btn-red">Näytä arviointikriteerit</button>`;
+ }
+ $('#submitTask').addEventListener('click',evaluateTask);
+}
+function drawOrder(t){
+ const element=$('#ordered');if(!element)return;
+ element.innerHTML=taskOrder.map((idx,pos)=>`<div class="v5-card v5-row" style="margin-bottom:9px"><b style="width:25px;color:#ff9296">${pos+1}</b><span style="flex:1">${esc(t.parts[idx])}</span><button class="v5-smallbtn" data-move="${pos},-1" ${pos===0?'disabled':''} aria-label="Siirrä ylös">↑</button><button class="v5-smallbtn" data-move="${pos},1" ${pos===taskOrder.length-1?'disabled':''} aria-label="Siirrä alas">↓</button></div>`).join('');
+ $$('[data-move]',element).forEach(btn=>btn.addEventListener('click',()=>{
+  const [at,delta]=btn.dataset.move.split(',').map(Number);
+  const dest=at+delta;if(dest<0||dest>=taskOrder.length)return;
+  [taskOrder[at],taskOrder[dest]]=[taskOrder[dest],taskOrder[at]];
+  drawOrder(t);
+ }));
+}
+function evaluateTask(){
+ const t=currentTask,out=$('#taskResult');let good=false,message='';
+ if(t.type==='order'){
+  good=taskOrder.every((idx,pos)=>idx===pos);
+  message=`${good?'Kaikki vaiheet oikein.':'Järjestyksessä on vielä korjattavaa.'} ${t.explain}`;
+ }else if(t.type==='multi'){
+  const chosen=$$('.multiAnswer:checked').map(e=>Number(e.value)).sort((a,b)=>a-b);
+  good=JSON.stringify(chosen)===JSON.stringify(t.right);
+  message=`${good?'Valinnat ovat oikein.':'Valinnoissa on puutteita tai ylimääräisiä kohtia.'} ${t.explain}`;
+ }else if(t.type==='number'){
+  const value=Number($('#statAnswer').value.replace(',','.'));
+  good=$('#statAnswer').value.trim()!==''&&Math.abs(value-t.answer)<=0.11;
+  message=`${good?'Lasku oikein.':'Tarkista laskutapa.'} ${t.explain}`;
+ }else{
+  const value=$('#essayAnswer').value.trim();
+  if(value.length<60){out.innerHTML='<div class="v5-feedback warn">Kirjoita perustelu hieman laajemmin ennen itsearviointia.</div>';return;}
+  message='Vertaa vastaustasi arviointikriteereihin. Tämä ei ole automaattisesti arvioitu koe: <ul>'+t.rubric.map(r=>`<li>${esc(r)}</li>`).join('')+'</ul>';
+ }
+ if(good){tasksDone[t.id]=true;storeSet(STORAGE_QUIZ,tasksDone);}
+ out.innerHTML=`<div class="v5-feedback ${!good&&t.type!=='essay'?'warn':''}"><strong>${t.type==='essay'?'Itsearviointi':good?'Hyväksytty harjoitus':'Pohdi uudelleen'}</strong><div>${message}</div></div>`;
+ out.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+/* KOULUTTAJAN MUOKATTAVA SUUNNITTELIJA */
+const starterPlan=()=>({
+ id:'p_'+Date.now(),title:'Viestiliikenteen harjoitusrasti',date:'',duration:'40',place:'Harjoitusalue / luokkahuone',group:'10–13-vuotiaat',leader:'',goals:'Osallistuja tunnistaa vastaanottajan, muodostaa ymmärrettävän viestin ja pyytää tarvittaessa tarkennuksen.',safety:'Käytetään vain kouluttajan osoittamia harjoituskanavia. Hätäpainikkeita ei kokeilla.',notes:'Aloita laitekertauksella. Vaihda puhujia puolivälissä.',
+ units:[{id:'u1',name:'Harjoitusjohto',call:'JOHTO',role:'Vastaanottaa ilmoitukset',feedback:''},{id:'u2',name:'Sammutusyksikkö',call:'131',role:'Ilmoittaa saapumisesta',feedback:''},{id:'u3',name:'Säiliöyksikkö',call:'153',role:'Välittää lisätietoa',feedback:''},{id:'u4',name:'Kärkiyksikkö',call:'151',role:'Pyytää täsmennystä',feedback:''}],
+ cards:[{id:'c1',phase:'Aloitus',target:'131',trigger:'Yksikkö saapuu kuvitteelliselle rastille.',expected:'Ilmoita saapuminen sovitulla kutsutavalla.'},{id:'c2',phase:'Tilannemuutos',target:'153',trigger:'Saapumispaikka vaihtuu kouluttajan ilmoituksella.',expected:'Varmista muutos ja välitä ymmärretty tieto.'},{id:'c3',phase:'Tarkennus',target:'151',trigger:'Viestistä kuuluu vain osa.',expected:'Pyydä epäselvä osa toistamaan.'}],
+ finalFeedback:''
+});
+let plans=storeGet(STORAGE_PLANS,[]);
+if(!Array.isArray(plans))plans=[];
+let plan=plans[0]?structuredClone(plans[0]):starterPlan();
+function persistPlan(){
+ if(!plans.length)plans=[plan];else{
+  const i=plans.findIndex(p=>p.id===plan.id);if(i<0)plans.unshift(plan);else plans[i]=plan;
+ }
+ plans=plans.slice(0,15);storeSet(STORAGE_PLANS,plans);
+}
+const planField=(field,label,type='input',hint='')=>`<label class="v5-label" for="plan_${field}">${label}</label>${type==='textarea'?`<textarea class="v5-textarea" id="plan_${field}" data-plan-field="${field}" placeholder="${esc(hint)}">${esc(plan[field]||'')}</textarea>`:`<input class="v5-input" id="plan_${field}" data-plan-field="${field}" value="${esc(plan[field]||'')}" placeholder="${esc(hint)}">`}`;
+function plannerScreen(){
+ root.innerHTML=pageIntro('KOULUTTAJAN TYÖKALUT','Harjoitussuunnittelija','Suunnittele oma viestiliikennerasti, muokkaa yksiköitä ja tilannekortteja sekä tulosta useamman sivun harjoituspaketti PDF:ksi.')+
+ `<section class="section shell"><div class="v5-row" style="margin-bottom:20px"><button class="btn btn-red" id="printPlan">Tulosta / Tallenna PDF:nä</button><button class="btn btn-muted" id="newPlan">Uusi harjoitus</button><button class="btn btn-muted" id="exportPlan">Vie JSON</button><label class="btn btn-muted" style="cursor:pointer">Tuo JSON<input type="file" accept=".json,application/json" id="importPlan" hidden></label></div>
+ <div class="v5-layout"><div class="v5-panel"><div class="eyebrow">01 / HARJOITUKSEN TIEDOT</div><h2>Perustiedot ja tavoitteet</h2>
+ <div class="v5-grid"><div>${planField('title','Harjoituksen nimi')}</div><div>${planField('group','Kohderyhmä')}</div><div>${planField('place','Paikka')}</div><div>${planField('duration','Kesto minuuttia')}</div><div>${planField('date','Päivämäärä')}</div><div>${planField('leader','Vastuukouluttaja')}</div></div>
+ ${planField('goals','Oppimistavoitteet','textarea')}${planField('safety','Turvallisuusohjeet','textarea')}${planField('notes','Harjoituksen kulku ja ohjeet','textarea')}
+ <hr class="v5-rule"><div class="v5-row"><div style="flex:1"><div class="eyebrow">02 / RADIOLIIKENNE</div><h2>Yksiköt</h2></div><button class="btn btn-muted btn-small" id="addUnit">+ Lisää yksikkö</button></div><div id="planUnits" class="v5-list"></div>
+ <hr class="v5-rule"><div class="v5-row"><div style="flex:1"><div class="eyebrow">03 / TEHTÄVÄT</div><h2>Tilannekortit</h2></div><button class="btn btn-muted btn-small" id="addCard">+ Lisää kortti</button></div><div id="planCards" class="v5-list"></div>
+ <hr class="v5-rule"><div class="eyebrow">04 / PALAUTE</div><h2>Yhteenveto ja kouluttajan havainnot</h2>
+ ${planField('finalFeedback','Laaja loppupalaute','textarea')}
+ <div class="v5-feedback"><b>Tulostus:</b> Saat kansilehden, erilliset yksikkökortit, tilannekortit ja usean sivun palautelomakkeet. Valitse tulostusikkunassa kohteeksi <b>Tallenna PDF:nä</b>.</div></div>
+ <aside class="v5-panel"><div class="eyebrow">YHTEENVETO</div><h2>Harjoituksen tilanne</h2><div class="v5-list"><div class="v5-stat"><strong id="plannerUnits">${plan.units.length}</strong><small>Yksikköä</small></div><div class="v5-stat"><strong id="plannerCards">${plan.cards.length}</strong><small>Tilannekorttia</small></div><div class="v5-stat"><strong id="plannerTime">${esc(plan.duration)}</strong><small>Minuuttia</small></div></div><p class="v5-muted">${storeChoice==='yes'?'Tallennus on sallittu tässä selaimessa.':'Tallennus ei ole käytössä. Vie suunnitelma JSON-tiedostoksi, jos haluat säilyttää sen.'}</p><button class="btn btn-muted" id="openCookieFromPlanner">Tallennusasetukset</button><hr class="v5-rule"><h3>Harjoituksen turvallisuus</h3><p class="v5-muted">Älä käytä harjoituskortteihin oikeita henkilö- tai potilastietoja. Käytä radiolaitteissa vain kouluttajan hyväksymiä harjoituskanavia.</p></aside></div></section>`;
+ renderPlannerLists();
+ $$('[data-plan-field]').forEach(field=>field.addEventListener('input',()=>{
+  plan[field.dataset.planField]=field.value;
+  persistPlan();if(field.dataset.planField==='duration')$('#plannerTime').textContent=field.value;
+ }));
+ $('#addUnit').addEventListener('click',()=>{plan.units.push({id:'u'+Date.now(),name:'Uusi yksikkö',call:'',role:'',feedback:''});persistPlan();renderPlannerLists();});
+ $('#addCard').addEventListener('click',()=>{plan.cards.push({id:'c'+Date.now(),phase:'Uusi tilanne',target:'',trigger:'',expected:''});persistPlan();renderPlannerLists();});
+ $('#printPlan').addEventListener('click',printPlanner);
+ $('#newPlan').addEventListener('click',()=>{if(confirm('Aloitetaanko uusi suunnitelma? Vie nykyinen JSON-tiedostoksi, jos haluat säilyttää sen ilman tallennuslupaa.')){plan=starterPlan();persistPlan();plannerScreen();}});
+ $('#exportPlan').addEventListener('click',()=>downloadJSON(plan));
+ $('#importPlan').addEventListener('change',importJSON);
+ $('#openCookieFromPlanner').addEventListener('click',openCookie);
+}
+function renderPlannerLists(){
+ const u=$('#planUnits'),c=$('#planCards');if(!u||!c)return;
+ u.innerHTML=plan.units.map((item,i)=>`<div class="v5-card"><div class="v5-row"><b style="flex:1">Yksikkö ${i+1}</b><button class="v5-smallbtn" data-delete-unit="${i}">Poista</button></div><div class="v5-grid">${['name','call','role'].map(k=>`<label class="v5-label">${{name:'Yksikön nimi',call:'Radiotunnus',role:'Rooli'}[k]}<input class="v5-input" data-unit="${i}" data-unit-key="${k}" value="${esc(item[k])}"></label>`).join('')}</div><label class="v5-label">Yksikön palaute</label><textarea class="v5-textarea feedback-area" data-unit="${i}" data-unit-key="feedback" placeholder="Tilanteen kulku, havainnot, kehittämiskohdat…">${esc(item.feedback)}</textarea></div>`).join('');
+ c.innerHTML=plan.cards.map((item,i)=>`<div class="v5-card"><div class="v5-row"><b style="flex:1">Tilannekortti ${i+1}</b><button class="v5-smallbtn" data-delete-card="${i}">Poista</button></div>${['phase','target','trigger','expected'].map(k=>`<label class="v5-label">${{phase:'Vaiheen nimi',target:'Yksikkö / vastaanottaja',trigger:'Tilanne ja uusi tieto',expected:'Odotettu toiminta / arviointikohta'}[k]}</label><textarea class="v5-textarea" style="min-height:${k==='trigger'||k==='expected'?90:57}px" data-card="${i}" data-card-key="${k}">${esc(item[k])}</textarea>`).join('')}</div>`).join('');
+ $$('[data-unit]',u).forEach(input=>input.addEventListener('input',()=>{plan.units[Number(input.dataset.unit)][input.dataset.unitKey]=input.value;persistPlan();}));
+ $$('[data-card]',c).forEach(input=>input.addEventListener('input',()=>{plan.cards[Number(input.dataset.card)][input.dataset.cardKey]=input.value;persistPlan();}));
+ $$('[data-delete-unit]',u).forEach(btn=>btn.addEventListener('click',()=>{if(plan.units.length<2){alert('Jätä vähintään yksi harjoitusyksikkö.');return;}plan.units.splice(Number(btn.dataset.deleteUnit),1);persistPlan();renderPlannerLists();}));
+ $$('[data-delete-card]',c).forEach(btn=>btn.addEventListener('click',()=>{plan.cards.splice(Number(btn.dataset.deleteCard),1);persistPlan();renderPlannerLists();}));
+ $('#plannerUnits').textContent=plan.units.length;$('#plannerCards').textContent=plan.cards.length;
+}
+function downloadJSON(obj){const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=el('a',{href:url,download:'valmiro-harjoitus.json'});a.click();setTimeout(()=>URL.revokeObjectURL(url),3000)}
+async function importJSON(event){
+ const file=event.target.files?.[0];if(!file)return;
+ if(file.size>1024*1024){alert('Tiedosto on liian suuri (enintään 1 Mt).');return;}
+ try{
+  const incoming=JSON.parse(await file.text());
+  if(typeof incoming.title!=='string'||!Array.isArray(incoming.units)||!Array.isArray(incoming.cards)||incoming.units.length>30||incoming.cards.length>100)throw Error('invalid');
+  const allowed=(value)=>String(value??'').slice(0,4000);
+  plan={id:'p_'+Date.now(),title:allowed(incoming.title),date:allowed(incoming.date),duration:allowed(incoming.duration),place:allowed(incoming.place),group:allowed(incoming.group),leader:allowed(incoming.leader),goals:allowed(incoming.goals),safety:allowed(incoming.safety),notes:allowed(incoming.notes),finalFeedback:allowed(incoming.finalFeedback),units:incoming.units.map((u,i)=>({id:'u'+i,name:allowed(u.name),call:allowed(u.call),role:allowed(u.role),feedback:allowed(u.feedback)})),cards:incoming.cards.map((c,i)=>({id:'c'+i,phase:allowed(c.phase),target:allowed(c.target),trigger:allowed(c.trigger),expected:allowed(c.expected)}))};
+  persistPlan();plannerScreen();
+ }catch{alert('Tiedoston sisältö ei ole Valmiron harjoitussuunnitelma.');}
+}
+function printPlanner(){
+ const target=$('#valmiroPrint');if(!target)return;
+ target.innerHTML=`<section class="print-page"><div style="color:#bc2631;font-weight:bold;letter-spacing:3px">VALMIRO / KOULUTTAJAKESKUS</div><h1>${esc(plan.title)}</h1><div class="print-meta"><p><b>Harjoituspäivä:</b> ${esc(plan.date||'________')}<br><b>Paikka:</b> ${esc(plan.place)}<br><b>Vastuukouluttaja:</b> ${esc(plan.leader||'________')}<br><b>Kohderyhmä:</b> ${esc(plan.group)}<br><b>Kesto:</b> ${esc(plan.duration)} min</p></div><h2>Oppimistavoitteet</h2><p>${esc(plan.goals)}</p><h2>Harjoituksen kulku</h2><p>${esc(plan.notes)}</p><h2>Turvallisuus</h2><p>${esc(plan.safety)}</p></section>`+
+ `<section class="print-page"><h1>Yksikköluettelo</h1><table><thead><tr><th>Yksikkö</th><th>Tunnus</th><th>Tehtävä</th></tr></thead><tbody>${plan.units.map(u=>`<tr><td>${esc(u.name)}</td><td>${esc(u.call)}</td><td>${esc(u.role)}</td></tr>`).join('')}</tbody></table><h2>Kouluttajan muistiinpanot</h2><div class="print-answer big"></div><div class="print-answer big"></div></section>`+
+ plan.units.map((u,i)=>`<section class="print-page"><p style="color:#bf3339;font-weight:bold">YKSIKKÖKORTTI ${i+1}</p><h1>${esc(u.name)}</h1><p><b>Kutsutunnus:</b> ${esc(u.call)}</p><p><b>Tehtävä:</b> ${esc(u.role)}</p><h2>Yksikön muistiinpanot</h2><div class="print-answer big"></div><h2>Kouluttajan palaute</h2><p>${esc(u.feedback)}</p>${'<div class="print-answer big"></div>'.repeat(3)}</section>`).join('')+
+ plan.cards.map((c,i)=>`<section class="print-page"><p style="color:#bf3339;font-weight:bold">TILANNEKORTTI ${i+1}</p><h1>${esc(c.phase)}</h1><div class="print-card"><b>Vastaanottaja / yksikkö:</b> ${esc(c.target)}</div><h2>Tilanne ja annetut tiedot</h2><p>${esc(c.trigger)}</p><h2>Odotettu toiminta</h2><p>${esc(c.expected)}</p><h2>Harjoituksen havainnot</h2><div class="print-answer big"></div><div class="print-answer big"></div></section>`).join('')+
+ `<section class="print-page"><h1>Yhteenveto ja arviointi</h1><p>${esc(plan.finalFeedback)}</p>${'<div class="print-answer big"></div>'.repeat(4)}<p><small>Valmiron harjoitussuunnitelma · Käyttö kouluttajan vastuulla.</small></p></section>`;
+ document.body.classList.add('v5-printing');
+ const finish=()=>{document.body.classList.remove('v5-printing');};
+ window.addEventListener('afterprint',finish,{once:true});
+ window.print();
+ setTimeout(finish,3000);
+}
+
+/* KOULUTTAJAKESKUS JA TIETOA */
+instructorScreen=function(){
+ root.innerHTML=pageIntro('KOULUTTAJILLE','Kouluttajakeskus','Rakenna oma rastisi, muokkaa yksiköt ja tilanteet ja tuota harjoitusmateriaalit ilman kirjautumista.')+
+ `<section class="section shell"><div class="v5-layout"><div><div class="v5-panel"><div class="eyebrow">HARJOITUSSUUNNITTELIJA</div><h2>Suunnittele harjoitus omalle ryhmällesi</h2><p class="lead">Lisää radiotunnukset, yksiköt, tilannekortit, arviointikohdat ja pitkät palautteet. Tulostus muodostaa kansilehden, yksikkökortit ja palautesivut.</p><div class="v5-row"><button class="btn btn-red" data-go="/suunnittelija">Avaa suunnittelija →</button><button class="btn btn-muted" id="quickPrint">Tulosta valmiit esimerkkikortit</button></div></div><div class="v5-panel" style="margin-top:20px"><div class="eyebrow">KOULUTUKSEN ETENEMINEN</div><h2>Rakenne, joka toimii rastilla</h2><div class="v5-list"><div class="v5-card"><b>01 / Aloitus ja turvallisuus</b><p class="v5-muted">Kerro tavoite, laitteiden käyttörajoitukset ja miten toimitaan ongelmissa.</p></div><div class="v5-card"><b>02 / Harjoituksen vaiheet</b><p class="v5-muted">Tilannekortit annetaan yksiköille, viestit välitetään sovitussa järjestyksessä, roolit vaihtuvat.</p></div><div class="v5-card"><b>03 / Palaute ja jatkokehitys</b><p class="v5-muted">Kirjaa jokaisesta ryhmästä havainnot: vahvuudet, tarkennusta vaativat asiat ja konkreettinen uusi harjoituskohde.</p></div></div></div></div><aside class="v5-panel"><div class="eyebrow">MATERIAALIT</div><h2>Suoraan selaimesta</h2><p class="v5-muted">Et tarvitse erillistä PDF-tiedostoa Githubiin. Avaa suunnittelija ja valitse tulostusikkunassa <b>Tallenna PDF:nä</b>.</p><hr class="v5-rule"><h3>Hyödyllisiä lähteitä</h3><ul>${sourcesHtml()}</ul><hr class="v5-rule"><p class="v5-muted">Harjoitukset ja materiaalit tulee sovittaa osallistujien osaamiseen ja tarkistuttaa vastuukouluttajalla.</p></aside></div></section>`;
+ $('#quickPrint').addEventListener('click',()=>{plan=starterPlan();printPlanner()});
+};
+aboutScreen=function(){
+ root.innerHTML=pageIntro('TIETOA VALMIROSTA','Oppimista palokuntanuorille','Digitaalinen paikka harjoitella, ymmärtää ja kehittää omaa osaamista harjoitusten välissä.')+
+ `<section class="section shell"><div class="v5-layout"><div><article class="v5-panel enhance-hero"><div class="eyebrow">MIKSI VALMIRO?</div><h2>Hyvä palokuntalainen oppii jatkuvasti.</h2><p>Valmiro kokoaa yhteen teoriaa, harjoituskysymyksiä, tilanneharjoituksia ja kouluttajien työkaluja. Tavoitteena on madaltaa kynnystä perehtyä turvallisuus- ja pelastusalan aiheisiin myös viikkoharjoitusten ulkopuolella.</p><p>Palvelu on rakennettu erityisesti nuorten itsenäiseen opiskeluun ja kouluttajien harjoitussuunnittelun tueksi. Käyttäjä voi tarkastella materiaaleja ilman tiliä.</p><div class="v5-grid" style="margin:25px 0"><div class="v5-stat"><strong>${COURSES.length}</strong><small>Oppimiskokonaisuutta</small></div><div class="v5-stat"><strong>${SCENARIOS.length}</strong><small>Monivaiheista tilannetta</small></div></div><hr class="v5-rule"><h3>Miten palvelu syntyy?</h3><p>Valmiron sisällöt ovat omaa oppimateriaalia, jota kehitetään julkisten viranomais- ja järjestölähteiden perusteella. Sivusto ei myönnä virallisia pätevyyksiä eikä esitä materiaalejaan virallisesti hyväksyttyinä koulutusohjeina.</p><h3>Ajantasaisuus ja lähteet</h3><p>Palokuntanuorten koulutuspolut kehittyvät. Oppisisältöjä päivitetään, kun lähteet tai koulutuskäytännöt muuttuvat. Pelastustoiminnan käytännön harjoituksissa noudatetaan oman kouluttajan ja organisaation ohjeita.</p><ul>${sourcesHtml()}</ul><h3>Yhteys ja palaute</h3><p>Tekninen ongelma, korjausehdotus tai palaute: <a href="mailto:help.valmiro@gmail.com">help.valmiro@gmail.com</a>. Älä lähetä potilastietoja tai muita arkaluonteisia henkilötietoja.</p></article></div><aside class="v5-panel"><div class="eyebrow">PALVELUN OSAT</div><h2>Opi. Harjoittele. Kehity.</h2><div class="v5-list"><div class="v5-card"><b>Kurssikirjasto</b><p class="v5-muted">Teoriaa ja osaamisen arviointia.</p></div><div class="v5-card"><b>Kokeet</b><p class="v5-muted">Valintatehtävät, järjestykset, tilastot ja perustelut.</p></div><div class="v5-card"><b>Kouluttajakeskus</b><p class="v5-muted">Muokattavat yksikkökortit ja tulostettavat suunnitelmat.</p></div><div class="v5-card"><b>Tietojen hallinta</b><p class="v5-muted">Valinta, tallennetaanko suorituksia omaan selaimeen.</p></div></div></aside></div></section>`;
+};
+function privacyScreen(){
+ root.innerHTML=pageIntro('TIETOSUOJA','Tietosuoja Valmirossa','Mitä tietoja sivusto käyttää, mihin niitä tarvitaan ja miten voit hallita tallennusta.')+
+ `<section class="section shell"><article class="v5-panel" style="max-width:920px;margin:auto"><h2>1. Palvelun yhteystiedot</h2><p>Valmiron yhteysosoite on <a href="mailto:help.valmiro@gmail.com">help.valmiro@gmail.com</a>. <b>Julkaisijalle:</b> täydennä tähän vastuullisen rekisterinpitäjän tunnistetiedot ennen julkista käyttöönottoa. Pelkkä palvelunimi ei aina riitä tietosuojailmoitukseen.</p><h2>2. IP-osoitteet ja tekniset lokit</h2><p>Valmiro käyttää GitHub Pages -julkaisualustaa. GitHub kertoo tallentavansa kävijöiden IP-osoitteita turvallisuustarkoituksiin. Valmiro ei tarjoa omaa IP-osoitteiden hakua tai analytiikkaa, eikä tämä evästevalinta estä GitHubin palvelinlokeja.</p><h2>3. Oppimissuoritukset ja suunnitelmat</h2><p>Jos sallit valinnaisen paikallisen tallennuksen, selaimesi localStorageen tallennetaan teoriaosioiden merkinnät, parhaat koepisteet, harjoitusten tulokset ja itse luomasi kouluttajasuunnitelmat. Tiedot eivät lähde Valmiron omaan palvelintietokantaan.</p><p>Jos kieltäydyt valinnaisesta tallennuksesta, voit silti käyttää sisältöjä, mutta tiedot eivät säily sivun sulkemisen jälkeen. Voit milloin tahansa muuttaa valintaa ja poistaa paikalliset tiedot evästeasetuksista.</p><h2>4. Evästeet ja vastaavat tekniikat</h2><p>Tämä toteutus ei lisää mainonta- tai analytiikkaevästeitä. Sivusto tallentaa ainoastaan valintasi muistavan asetuksen (localStorage). Varsinainen oppimishistoria tallennetaan vain, jos hyväksyt sen erikseen. Valinnan voi vaihtaa sivuston alareunan <b>Evästeasetukset</b>-linkistä.</p><h2>5. Sähköpostiviestit</h2><p>Jos lähetät viestin tukiosoitteeseen, sähköpostipalvelu käsittelee lähettäjän osoitteen ja viestin sisältöä yhteydenottoon vastaamiseksi. Älä lähetä salassa pidettäviä, potilas- tai muita arkaluonteisia tietoja. Ylläpitäjän on ennen julkaisua täsmennettävä sähköpostitietojen käsittelyperuste, vastaanottajat ja säilytysaika.</p><h2>6. Säilytys ja oikeudet</h2><p>Paikallinen oppimishistoria säilyy selaimessa, kunnes poistat sen tai selaimen tallennustiedot poistuvat. GitHubin teknisten lokien säilytysaikaa hallinnoi GitHub oman tietosuojakäytäntönsä mukaisesti. Henkilötietojen käsittelyyn voi soveltua GDPR:n mukaisia tiedonsaanti-, oikaisu- ja poistamisoikeuksia; yhteystiedoista saa lisätietoa.</p><h2>7. Kolmannet osapuolet</h2><p>Sivun tekninen julkaisu tapahtuu GitHub Pagesin kautta. Linkkien avaaminen ulkoisiin lähteisiin vie kyseisen palveluntarjoajan verkkosivustolle.</p><hr class="v5-rule"><button class="btn btn-red" id="privacySettings">Avaa evästeasetukset</button><p class="v5-muted">Huomautus ylläpitäjälle: tämä on toteutusta kuvaava tietosuoja- ja tallennustekstin pohja, ei valmis oikeudellinen tarkastus.</p></article></section>`;
+ $('#privacySettings').addEventListener('click',openCookie);
+}
+function cookieInfoScreen(){
+ root.innerHTML=pageIntro('EVÄSTEET JA ASETUKSET','Tallennus ja evästevalinnat','Voit käyttää Valmiroa myös ilman vapaaehtoista selaimeen tallentamista.')+
+ `<section class="section shell"><article class="v5-panel" style="max-width:900px;margin:auto"><h2>Mitä sivusto käyttää?</h2><div class="v5-card"><b>Välttämätön valintatieto</b><p class="v5-muted">LocalStorage-tieto <code>${STORAGE_CHOICE}</code> muistaa, hyväksyitkö vapaaehtoisen tallennuksen. Sitä käytetään vain tämän valinnan muistamiseen.</p></div><div class="v5-card" style="margin-top:12px"><b>Vapaaehtoinen oppimishistoria</b><p class="v5-muted">LocalStorageen tallentuvat kurssisuoritukset, harjoitustulokset ja suunnitelmat vain, jos olet hyväksynyt tämän ominaisuuden.</p></div><div class="v5-card" style="margin-top:12px"><b>Analytiikka ja mainonta</b><p class="v5-muted">Valmiro ei tässä versiossa käytä analytiikka- tai markkinointievästeitä eikä asenna ulkoisia seurantasovelluksia.</p></div><p>GitHub Pages voi kirjata kävijän IP-osoitteen turvallisuussyistä. Tämä on erillistä selaimen paikallisen oppimishistorian valinnasta.</p><button class="btn btn-red" id="editCookies">Muuta valintoja</button><button class="btn btn-muted" data-go="/tietosuoja">Lue tietosuojasta</button></article></section>`;
+ $('#editCookies').addEventListener('click',openCookie);
+}
+
+/* EVÄSTEASETUKSET: TODELLINEN TOIMINTO, EI KORISTEBANNERI */
+const cookieScreen=el('div',{class:'cookie-screen',id:'valmiroCookieScreen',role:'dialog','aria-modal':'true','aria-labelledby':'cookieTitle'});
+cookieScreen.hidden=true;
+cookieScreen.innerHTML=`<div class="cookie-panel"><div class="eyebrow">EVÄSTEET JA TALLENNUS</div><h2 id="cookieTitle">Sinä päätät, tallennetaanko edistymisesi.</h2><p>Valmiro ei käytä mainonta- tai analytiikkaevästeitä. Voit halutessasi sallia oppimishistorian ja harjoitussuunnitelmien tallentamisen <b>vain tähän selaimeen</b>. Hosting-palvelu voi käsitellä IP-osoitteita turvallisuussyistä riippumatta tästä valinnasta.</p><div class="v5-switch"><div><strong>Valinnan muistaminen</strong><div class="v5-muted">Välttämätön asetus, jotta valintaa ei kysytä jokaisella sivulla.</div></div><span class="v5-chip">AINA KÄYTÖSSÄ</span></div><div class="v5-switch"><label for="localProgress"><strong>Valinnainen paikallinen tallennus</strong><div class="v5-muted">Kurssit, pisteet ja kouluttajan suunnitelmat omassa selaimessasi.</div></label><input id="localProgress" type="checkbox"></div><div class="v5-row"><button class="btn btn-red" id="allowStorage">Salli tallennus</button><button class="btn btn-red" id="declineStorage">Jatka tallentamatta</button><button class="btn btn-muted" id="saveStoragePref">Tallenna valinnat</button></div><p style="margin-top:13px;font-size:12px">Tarkemmat tiedot: <a href="#/tietosuoja" id="cookiePrivacy">Tietosuojakäytäntö</a> · Voit muuttaa valintaa footerista myöhemmin.</p></div>`;
+document.body.appendChild(cookieScreen);
+let cookieReturnFocus=null;
+function openCookie(){cookieReturnFocus=document.activeElement;cookieScreen.hidden=false;$('#localProgress').checked=storeChoice==='yes';$('#allowStorage').focus();}
+function closeCookie(){cookieScreen.hidden=true;cookieReturnFocus?.focus?.();}
+function chooseStorage(value){
+ const previous=storeChoice;storeChoice=value;
+ try{localStorage.setItem(STORAGE_CHOICE,value)}catch{}
+ if(value==='no')clearOptional();
+ if(value==='yes'&&previous!=='yes'){
+  data=originalLoad();
+  plans=storeGet(STORAGE_PLANS,[]);if(!Array.isArray(plans))plans=[];
+  tasksDone=storeGet(STORAGE_QUIZ,{});
+  if(plans[0])plan=structuredClone(plans[0]);
+ }
+ closeCookie();
+ if(location.hash==='#/oma')progressScreen();
+ if(location.hash==='#/suunnittelija')plannerScreen();
+}
+$('#allowStorage').addEventListener('click',()=>chooseStorage('yes'));
+$('#declineStorage').addEventListener('click',()=>chooseStorage('no'));
+$('#saveStoragePref').addEventListener('click',()=>chooseStorage($('#localProgress').checked?'yes':'no'));
+$('#cookiePrivacy').addEventListener('click',()=>{closeCookie();});
+cookieScreen.addEventListener('keydown',e=>{if(e.key==='Escape'&&storeChoice!==null)closeCookie();});
+
+/* VALIKOT, FOOTER JA KUVAKKEET */
+const drawerFoot=$('.drawer-foot');if(drawerFoot)drawerFoot.innerHTML=`Ongelmatilanteissa <a href="mailto:help.valmiro@gmail.com">help.valmiro@gmail.com</a>`;
+const menuItems=[['/kokeet','07','Kokeet ja tehtävät'],['/suunnittelija','08','Harjoitussuunnittelija'],['/tietosuoja','09','Tietosuoja'],['/evasteet','10','Evästeet']];
+const drawerFooter=$('.drawer-foot');
+for(const [path,n,label] of menuItems){const btn=el('button',{'data-go':path});btn.innerHTML=`${n} <span>${esc(label)}</span>`;drawerFooter?.before(btn);}
+const headerNav=$('.top-links');
+if(headerNav){const button=el('button',{'data-go':'/kokeet',text:'Kokeet'});headerNav.appendChild(button);}
+const footer=$('.footer');
+if(footer){
+ const small=footer.querySelector('small');if(small)small.innerHTML=`© <span id="copyrightYearV5">${new Date().getFullYear()}</span> Valmiro · Kaikki oikeudet pidätetään`;
+ const links=footer.querySelector('div:nth-child(2)');
+ if(links){
+  [['/kokeet','Kokeet'],['/suunnittelija','Suunnittelija'],['/tietosuoja','Tietosuoja'],['/evasteet','Evästeet']].forEach(([path,label])=>{const b=el('button',{'data-go':path,text:label});links.appendChild(b)});
+  const b=el('button',{text:'Evästeasetukset'});b.addEventListener('click',openCookie);links.appendChild(b);
+  const mail=el('a',{href:'mailto:help.valmiro@gmail.com',text:'help.valmiro@gmail.com'});mail.style.cssText='color:#c4d1e0;padding:9px;font-size:13px;';links.appendChild(mail);
+ }
+}
+const printDiv=el('div',{id:'valmiroPrint'});printDiv.className='v5-print-document';document.body.appendChild(printDiv);
+
+const oldHome=home;
+home=function(){oldHome();decorate();};
+const oldCatalog=catalog;
+catalog=function(){oldCatalog();decorate();};
+// Varmistetaan, että valikkojen hover näkyy vain osoittimen kohdalla.
+// Selain käyttää CSS :hover -tilaa eikä pysyvää tekstivärin muutosta.
+route();
+if(storeChoice===null)openCookie();
+})();
+
+</script>
 </body>
 </html>
