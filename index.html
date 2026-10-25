@@ -1,0 +1,846 @@
+
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#111C2D">
+<meta name="description" content="Valmiro – itsenäinen oppimisympäristö palokuntanuorille.">
+<title>Valmiro – Osaaminen alkaa harjoittelemalla</title>
+
+<style>
+:root {
+  --navy:#111C2D;
+  --navy2:#1B2A40;
+  --red:#E5484D;
+  --redlight:#FFF0F0;
+  --bg:#F5F7FA;
+  --white:#FFFFFF;
+  --text:#172235;
+  --muted:#637187;
+  --border:#E1E6ED;
+  --radius:14px;
+}
+* { box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+}
+button { font:inherit; cursor:pointer; }
+a { color:inherit; text-decoration:none; }
+.container { max-width:1150px; margin:auto; padding:0 24px; }
+
+header {
+  background:var(--navy);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:50;
+  border-bottom:1px solid #27354A;
+}
+.navbar {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  min-height:76px;
+  gap:20px;
+}
+.brand { display:flex; align-items:center; gap:12px; font-weight:850; font-size:23px; letter-spacing:1px; }
+.brandmark {
+  width:42px;
+  height:42px;
+  background:var(--red);
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  color:white;
+  font-size:26px;
+}
+nav { display:flex; align-items:center; gap:26px; }
+nav button {
+  background:none;
+  border:none;
+  color:#CBD4DF;
+  font-size:14px;
+  font-weight:600;
+  padding:10px 0;
+}
+nav button:hover,nav button.active { color:white; }
+nav button.active { box-shadow:0 2px var(--red); }
+.menu-toggle { display:none; background:none; color:white; border:0; font-size:25px; }
+
+.hero {
+  background:linear-gradient(115deg,#111C2D,#203450);
+  color:white;
+  padding:104px 0 112px;
+  position:relative;
+  overflow:hidden;
+}
+.hero:after {
+  content:"";
+  position:absolute;
+  width:440px;
+  height:440px;
+  border:85px solid #FFFFFF06;
+  border-radius:50%;
+  right:-170px;
+  top:-130px;
+  pointer-events:none;
+}
+.eyebrow {
+  color:#FF8588;
+  text-transform:uppercase;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:2px;
+}
+.hero h1 {
+  font-size:clamp(38px,5.4vw,68px);
+  line-height:1.09;
+  letter-spacing:-2px;
+  margin:20px 0;
+  max-width:760px;
+}
+.hero h1 span { color:#F47B7E; }
+.hero p { color:#C4CFDD; font-size:17px; max-width:580px; }
+.actions { display:flex; gap:12px; margin-top:30px; flex-wrap:wrap; }
+.btn {
+  padding:12px 20px;
+  border:1px solid transparent;
+  border-radius:9px;
+  font-weight:750;
+  font-size:14px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+.btn-primary { background:var(--red); color:white; }
+.btn-primary:hover { background:#CB353A; }
+.btn-outline { border-color:#738197; background:transparent; color:white; }
+.btn-outline:hover { background:#FFFFFF12; }
+.btn-light { background:white; border-color:var(--border); color:var(--text); }
+.btn-light:hover { background:#F2F4F8; }
+
+.page { display:none; min-height:65vh; }
+.page.active { display:block; }
+.section { padding:70px 0; }
+.section-head { margin-bottom:30px; }
+.section-head h2, .page-head h1 { margin:6px 0 8px; font-size:clamp(29px,4vw,39px); letter-spacing:-1px; line-height:1.2; }
+.section-head p, .page-head p { color:var(--muted); margin:0; max-width:680px; }
+.page-head { background:white; border-bottom:1px solid var(--border); padding:54px 0; }
+.page-head .eyebrow { color:var(--red); }
+
+.grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; }
+.card {
+  background:white;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+  transition:transform .2s,box-shadow .2s;
+}
+.card:hover { transform:translateY(-3px); box-shadow:0 12px 30px #14213A0D; }
+.card-body { padding:24px; }
+.card h3 { margin:10px 0 8px; font-size:19px; line-height:1.3; }
+.card p { color:var(--muted); margin:0 0 18px; font-size:14px; }
+.card-top {
+  background:var(--navy2);
+  height:140px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+}
+.card-top svg { width:55px; height:55px; stroke-width:1.4; }
+.tag {
+  display:inline-block;
+  background:var(--redlight);
+  color:#BB3035;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.3px;
+  border-radius:5px;
+  padding:4px 9px;
+}
+.tag.grey { background:#EEF1F5; color:#586476; }
+.card-link { color:#C7373C; font-weight:750; font-size:14px; border:0; background:transparent; padding:0; }
+.card-link:hover { text-decoration:underline; }
+
+.feature-band { background:white; border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+.features { display:grid; grid-template-columns:repeat(3,1fr); gap:30px; padding:45px 0; }
+.feature h3 { font-size:17px; margin:8px 0; }
+.feature p { color:var(--muted); font-size:14px; margin:0; }
+.feature-icon {
+  background:var(--redlight);
+  border-radius:10px;
+  width:45px;
+  height:45px;
+  display:grid;
+  place-items:center;
+  color:#C7373C;
+  font-weight:900;
+  font-size:22px;
+}
+.notice {
+  background:#FFF8EA;
+  border:1px solid #F0DEB9;
+  border-radius:10px;
+  color:#71551E;
+  padding:16px 20px;
+  font-size:14px;
+  margin-bottom:25px;
+}
+.panel {
+  background:white;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:30px;
+}
+.panel h2 { margin:0 0 15px; font-size:24px; }
+.panel h3 { margin:25px 0 8px; }
+.panel p { color:#47556A; }
+.panel ul { padding-left:22px; }
+.panel li { margin-bottom:9px; }
+.lesson-layout { display:grid; grid-template-columns:245px minmax(0,1fr); gap:25px; align-items:start; }
+.lesson-menu { padding:18px; }
+.lesson-menu button {
+  display:block;
+  width:100%;
+  text-align:left;
+  border:0;
+  border-radius:8px;
+  padding:12px;
+  background:transparent;
+  font-size:14px;
+  color:var(--muted);
+  font-weight:650;
+}
+.lesson-menu button.selected { background:var(--redlight); color:#BC353A; }
+.lesson-menu button:hover { background:#F3F5F8; }
+.lesson-content { display:none; }
+.lesson-content.selected { display:block; }
+.callout {
+  border-left:4px solid var(--red);
+  background:#F8F9FC;
+  padding:16px 18px;
+  border-radius:0 8px 8px 0;
+  margin:22px 0;
+}
+.callout p { margin:5px 0 0; }
+.quiz-question { margin:0 0 24px; padding-bottom:24px; border-bottom:1px solid var(--border); }
+.quiz-question h3 { font-size:17px; margin:0 0 12px; }
+.quiz-option {
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  margin:8px 0;
+  cursor:pointer;
+  font-size:14px;
+}
+.quiz-option:hover { background:#F8F9FC; }
+.quiz-option input { accent-color:var(--red); margin-top:4px; }
+.result {
+  background:#ECF8F0;
+  border:1px solid #B6DCC4;
+  padding:20px;
+  border-radius:10px;
+  margin-top:20px;
+}
+.result h3 { margin:0; }
+.result p { margin:8px 0 0; }
+
+footer { background:#101A29; color:#C1CBD8; padding:42px 0 20px; }
+.footer-row { display:flex; justify-content:space-between; gap:30px; flex-wrap:wrap; }
+footer h3 { color:white; margin:0 0 8px; letter-spacing:1px; }
+footer p { max-width:480px; font-size:13px; }
+footer button { border:0; background:none; color:#CBD4DF; margin:0 14px 5px 0; padding:5px 0; font-size:13px; }
+footer button:hover { color:white; }
+.copyright { border-top:1px solid #2C3849; padding-top:18px; margin-top:25px; font-size:12px; color:#93A2B6; }
+
+@media(max-width:800px) {
+  .grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .lesson-layout { grid-template-columns:1fr; }
+  .features { grid-template-columns:1fr; gap:22px; }
+  .menu-toggle { display:block; }
+  nav {
+    display:none;
+    position:absolute;
+    left:0;
+    right:0;
+    top:76px;
+    background:var(--navy);
+    padding:16px 24px 24px;
+    flex-direction:column;
+    align-items:stretch;
+    gap:6px;
+    box-shadow:0 18px 25px #0002;
+  }
+  nav.open { display:flex; }
+  nav button { text-align:left; }
+  nav button.active { box-shadow:none; color:#FF888B; }
+}
+@media(max-width:560px) {
+  .container { padding:0 18px; }
+  .grid { grid-template-columns:1fr; }
+  .hero { padding:65px 0 76px; }
+  .hero h1 { letter-spacing:-1px; }
+  .section { padding:44px 0; }
+  .panel { padding:20px; }
+  .page-head { padding:40px 0; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="container navbar">
+    <a class="brand" href="#etusivu" onclick="showPage('etusivu')">
+      <span class="brandmark">V</span>
+      VALMIRO
+    </a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Avaa valikko" aria-expanded="false" onclick="toggleMenu()">☰</button>
+    <nav id="nav">
+      <button data-page="etusivu" class="active" onclick="showPage('etusivu')">Etusivu</button>
+      <button data-page="kurssit" onclick="showPage('kurssit')">Kurssit</button>
+      <button data-page="harjoitukset" onclick="showPage('harjoitukset')">Harjoitukset</button>
+      <button data-page="kouluttajat" onclick="showPage('kouluttajat')">Kouluttajille</button>
+      <button data-page="tietoa" onclick="showPage('tietoa')">Tietoa meistä</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ETUSIVU -->
+<div id="etusivu" class="page active">
+  <section class="hero">
+    <div class="container">
+      <div class="eyebrow">Palokuntanuorten oppimisympäristö</div>
+      <h1>Osaaminen alkaa <span>harjoittelemalla.</span></h1>
+      <p>Opi pelastusalan perusteita, kehitä taitojasi ja testaa osaamistasi. Valmiro tuo oppimateriaalit kaikkien saataville – maksutta.</p>
+      <div class="actions">
+        <button class="btn btn-primary" onclick="showPage('kurssit')">Tutustu kursseihin &rarr;</button>
+        <button class="btn btn-outline" onclick="showPage('harjoitukset')">Aloita harjoittelu</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="feature-band">
+    <div class="container features">
+      <div class="feature">
+        <div class="feature-icon">✓</div>
+        <h3>Opi omaan tahtiin</h3>
+        <p>Käy oppimateriaaleja läpi silloin, kun sinulle sopii.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">?</div>
+        <h3>Testaa osaamistasi</h3>
+        <p>Harjoituskysymykset antavat palautteen suoraan selaimessa.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">↗</div>
+        <h3>Kehity palokuntalaisena</h3>
+        <p>Kertaa taitoja ja valmistaudu ohjattuihin harjoituksiin.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">Tutustu sisältöihin</div>
+        <h2>Aloita oppiminen</h2>
+        <p>Valitse aihe, johon haluat tutustua. Lisää kursseja julkaistaan myöhemmin.</p>
+      </div>
+      <div class="grid" id="homeCourses"></div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="panel" style="background:var(--navy);color:white;border:0">
+        <div class="eyebrow">Mikä on Valmiro?</div>
+        <h2 style="margin:12px 0">Uusi tapa oppia palokuntatoiminnasta.</h2>
+        <p style="color:#C2CEDE;max-width:700px">Valmiro on itsenäinen, palokuntanuorille suunnattu oppimisprojekti. Tarkoitus on tarjota helposti ymmärrettävää tietoa ja käytännönläheisiä harjoituksia.</p>
+        <button class="btn btn-primary" onclick="showPage('tietoa')">Lue lisää &rarr;</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- KURSSIT -->
+<div id="kurssit" class="page">
+  <div class="page-head"><div class="container">
+    <div class="eyebrow">Oppiminen</div>
+    <h1>Kurssikirjasto</h1>
+    <p>Tutustu eri aiheisiin ja kehitä osaamistasi.</p>
+  </div></div>
+  <section class="section"><div class="container">
+    <div class="notice">Valmiron sisällöt ovat itsenäisiä harjoitusmateriaaleja. Ne eivät korvaa palokunnan virallista koulutusta tai kouluttajan ohjeita.</div>
+    <div class="grid" id="allCourses"></div>
+  </div></section>
+</div>
+
+<!-- VIESTILIIKENNEKURSSI -->
+<div id="viestiliikenne" class="page">
+  <div class="page-head"><div class="container">
+    <div class="eyebrow">Peruskurssi · Viestiliikenne</div>
+    <h1>Viestiliikenteen perusteet</h1>
+    <p>Harjoittele radioliikenteen periaatteita selkeiden esimerkkien avulla.</p>
+  </div></div>
+  <section class="section"><div class="container">
+    <div class="lesson-layout">
+      <aside class="panel lesson-menu" aria-label="Kurssin osiot">
+        <button class="selected" onclick="showLesson(0)">01 · Johdanto</button>
+        <button onclick="showLesson(1)">02 · Radiopuhelimen käyttö</button>
+        <button onclick="showLesson(2)">03 · Radioliikenne</button>
+        <button onclick="showLesson(3)">04 · Harjoitustilanne</button>
+        <button onclick="showLesson(4)">05 · Osaamisen testaus</button>
+      </aside>
+      <div>
+        <article class="panel lesson-content selected">
+          <span class="tag">OSIO 1 / 5</span>
+          <h2>Johdanto viestiliikenteeseen</h2>
+          <p>Viestiliikenteen tehtävänä on välittää tietoa nopeasti, selkeästi ja ymmärrettävästi.</p>
+          <h3>Miksi viestiliikennettä harjoitellaan?</h3>
+          <ul>
+            <li>Viestit ymmärretään oikein.</li>
+            <li>Tarpeeton puhe ei kuormita radioliikennettä.</li>
+            <li>Yksiköt voivat välittää keskeisiä tietoja toisilleen.</li>
+            <li>Radioiden käyttö tulee tutuksi turvallisessa harjoituksessa.</li>
+          </ul>
+          <div class="callout"><strong>Muista</strong><p>Oikeissa tilanteissa noudatetaan aina oman organisaation viestiliikenneohjeita.</p></div>
+          <button class="btn btn-primary" onclick="showLesson(1)">Seuraava osio &rarr;</button>
+        </article>
+
+        <article class="panel lesson-content">
+          <span class="tag">OSIO 2 / 5</span>
+          <h2>Radiopuhelimen käyttö</h2>
+          <p>Radiopuhelimen perustoiminnot on hyvä tunnistaa ennen käytännön harjoituksia.</p>
+          <h3>Puhepainike eli tangentti</h3>
+          <p>Monissa radiopuhelimissa lähetys käynnistetään painamalla PTT-painiketta. Odota, että lähetys on valmis alkamaan, ja puhu selkeästi. Vapauta painike viestin lopuksi.</p>
+          <h3>Ennen lähettämistä</h3>
+          <ul>
+            <li>Varmista, että käytössä on harjoitukseen määrätty puheryhmä tai kanava.</li>
+            <li>Kuuntele, onko radioliikenne vapaana.</li>
+            <li>Suunnittele lyhyt ja ymmärrettävä viesti.</li>
+            <li>Älä kokeile hätäpainiketta.</li>
+          </ul>
+          <div class="callout"><strong>Huomio</strong><p>Toiminnot ja merkkivalot vaihtelevat radiomallin mukaan. Kouluttaja opastaa harjoituslaitteen käyttöön.</p></div>
+          <button class="btn btn-primary" onclick="showLesson(2)">Seuraava osio &rarr;</button>
+        </article>
+
+        <article class="panel lesson-content">
+          <span class="tag">OSIO 3 / 5</span>
+          <h2>Radioliikenteen perusteet</h2>
+          <p>Radioviestin tulee olla mahdollisimman selkeä ja tarkoituksenmukainen.</p>
+          <h3>Kutsuminen</h3>
+          <p>Eräs harjoituksissa käytettävä kutsutapa on kutsuttavan tunnus ensin ja oma tunnus sen jälkeen.</p>
+          <div class="callout">
+            <strong>Harjoitusesimerkki – kuvitteelliset tunnukset</strong>
+            <p>Yksikkö 131: "Johto, 131."</p>
+            <p>Johto: "Johto."</p>
+            <p>Yksikkö 131: "131 kohteessa."</p>
+          </div>
+          <p>Käytettävä kutsutapa riippuu toiminnan ohjeista. Tämä esimerkki ei ole yleispätevä VIRVE-ohje.</p>
+          <h3>Hyvän viestin ominaisuudet</h3>
+          <ul><li>Lyhyt</li><li>Ymmärrettävä</li><li>Asiallinen</li><li>Tarvittaessa vahvistettu</li></ul>
+          <button class="btn btn-primary" onclick="showLesson(3)">Seuraava osio &rarr;</button>
+        </article>
+
+        <article class="panel lesson-content">
+          <span class="tag">OSIO 4 / 5</span>
+          <h2>Harjoitustilanne</h2>
+          <p>Olet kuvitteellisen yksikön 131 radioliikenteestä vastaava henkilö.</p>
+          <p>Yksikkönne on saapunut koulutusrastille, ja sinun tulee ilmoittaa asiasta harjoituksen johdolle.</p>
+          <h3>Tehtävä</h3>
+          <p>Muodosta lyhyt viesti, jossa tunnistat vastaanottajan ja oman yksikkösi sekä ilmoitat saapumisen.</p>
+          <div class="callout"><strong>Esimerkkiratkaisu</strong><p>"Johto, 131." – "Johto." – "131 saapunut harjoituspaikalle."</p></div>
+          <p>Tämä on kuvitteellinen kirjallinen harjoitus. Älä käytä oikeita viranomaispuheryhmiä harjoitteluun ilman lupaa ja ohjausta.</p>
+          <button class="btn btn-primary" onclick="showLesson(4)">Siirry kokeeseen &rarr;</button>
+        </article>
+
+        <article class="panel lesson-content">
+          <span class="tag">OSIO 5 / 5</span>
+          <h2>Testaa osaamistasi</h2>
+          <p>Vastaa kysymyksiin. Saat tuloksesi heti, eikä vastauksia lähetetä palvelimelle.</p>
+          <div id="courseQuiz"></div>
+          <button class="btn btn-primary" onclick="gradeQuiz('courseQuiz')">Tarkista vastaukset</button>
+          <div id="courseQuizResult" aria-live="polite"></div>
+        </article>
+      </div>
+    </div>
+  </div></section>
+</div>
+
+<!-- HARJOITUKSET -->
+<div id="harjoitukset" class="page">
+  <div class="page-head"><div class="container">
+    <div class="eyebrow">Osaamisen testaus</div>
+    <h1>Harjoitukset</h1>
+    <p>Kertaa asioita ja kokeile, kuinka hyvin osaat viestiliikenteen perusteet.</p>
+  </div></div>
+  <section class="section"><div class="container" style="max-width:850px">
+    <div class="panel">
+      <span class="tag">TIETOVISA</span>
+      <h2>Viestiliikenteen harjoituskoe</h2>
+      <p>Viisi kysymystä, yksi oikea vastaus kuhunkin. Ei aikarajaa eikä kirjautumista.</p>
+      <div id="practiceQuiz"></div>
+      <button class="btn btn-primary" onclick="gradeQuiz('practiceQuiz')">Tarkista vastaukset</button>
+      <button class="btn btn-light" onclick="resetQuiz('practiceQuiz')">Aloita uudelleen</button>
+      <div id="practiceQuizResult" aria-live="polite"></div>
+    </div>
+  </div></section>
+</div>
+
+<!-- KOULUTTAJILLE -->
+<div id="kouluttajat" class="page">
+  <div class="page-head"><div class="container">
+    <div class="eyebrow">Harjoitusten suunnittelu</div>
+    <h1>Kouluttajille</h1>
+    <p>Materiaaleja ja ideoita palokuntanuorten harjoitusten tueksi.</p>
+  </div></div>
+  <section class="section"><div class="container">
+    <div class="grid">
+      <div class="card"><div class="card-body">
+        <span class="tag">HARJOITUSIDEA</span>
+        <h3>Radioliikenteen pariharjoitus</h3>
+        <p>Nuoret muodostavat pareittain radioviestejä kuvitteellisissa tilanteissa.</p>
+        <button class="card-link" onclick="downloadMaterial('radio')">Lataa harjoitusohje ↓</button>
+      </div></div>
+      <div class="card"><div class="card-body">
+        <span class="tag">MATERIAALI</span>
+        <h3>Viestiliikenteen muistilista</h3>
+        <p>Lyhyt kertaus selkeän radioviestin muodostamisesta.</p>
+        <button class="card-link" onclick="downloadMaterial('checklist')">Lataa muistilista ↓</button>
+      </div></div>
+      <div class="card"><div class="card-body">
+        <span class="tag grey">TULOSSA</span>
+        <h3>Lisää koulutusmateriaaleja</h3>
+        <p>Materiaalikirjastoa voidaan laajentaa uusilla harjoituksilla.</p>
+        <span style="color:var(--muted);font-size:14px">Ei vielä saatavilla</span>
+      </div></div>
+    </div>
+  </div></section>
+</div>
+
+<!-- TIETOA -->
+<div id="tietoa" class="page">
+  <div class="page-head"><div class="container">
+    <div class="eyebrow">Valmiro</div>
+    <h1>Tietoa palvelusta</h1>
+    <p>Oppimista, harjoittelua ja osaamisen kehittämistä.</p>
+  </div></div>
+  <section class="section"><div class="container" style="max-width:880px">
+    <div class="panel">
+      <h2>Mikä on Valmiro?</h2>
+      <p>Valmiro on itsenäinen verkkopohjainen oppimisprojekti, joka on suunnattu erityisesti palokuntanuorille ja palokuntatoiminnasta kiinnostuneille.</p>
+      <p>Sen tavoitteena on tarjota selkeitä oppimateriaaleja, harjoituksia ja mahdollisuuksia oman osaamisen testaamiseen.</p>
+      <h3>Maksuton ja avoin</h3>
+      <p>Valmiron julkisia oppimateriaaleja voi käyttää ilman käyttäjätiliä tai rekisteröitymistä.</p>
+      <h3>Turvallisuus ja vastuu</h3>
+      <p>Valmiro ei ole virallinen pelastusalan oppilaitos eikä sen harjoituksista saa virallista pätevyyttä. Sisällöt ovat yleistä oppimista varten, eivätkä korvaa kouluttajan ohjeita, hyväksyttyä koulutusta tai turvallisuusmääräyksiä.</p>
+      <h3>Tietosuoja</h3>
+      <p>Tässä ensimmäisessä versiossa Valmiro ei pyydä nimiä, sähköpostiosoitteita tai muita käyttäjätietoja. Harjoitusvastaukset käsitellään selaimessa eikä niitä tallenneta sivuston omaan tietokantaan. Sivuston ylläpitopalvelu voi käsitellä teknisiä yhteystietoja.</p>
+      <p style="font-size:13px;color:var(--muted)">Huomio ylläpitäjälle: tarkista ja täydennä palvelun tiedot sekä tietosuojakuvaus ennen julkaisua.</p>
+    </div>
+  </div></section>
+</div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-row">
+      <div>
+        <h3>VALMIRO</h3>
+        <p>Itsenäinen oppimisympäristö palokuntanuorille. Osaaminen alkaa harjoittelemalla.</p>
+      </div>
+      <div>
+        <button onclick="showPage('kurssit')">Kurssit</button>
+        <button onclick="showPage('harjoitukset')">Harjoitukset</button>
+        <button onclick="showPage('kouluttajat')">Kouluttajille</button>
+        <button onclick="showPage('tietoa')">Tietoa</button>
+      </div>
+    </div>
+    <div class="copyright">© <span id="year"></span> Valmiro · Itsenäinen oppimisprojekti, ei virallinen pelastusviranomaisen palvelu.</div>
+  </div>
+</footer>
+
+<script>
+const courses = [
+  {
+    title:"Viestiliikenteen perusteet",
+    category:"PERUSKURSSI",
+    description:"Radiopuhelimen käyttö, kutsuminen ja selkeä viestiliikenne.",
+    available:true,
+    icon:"radio"
+  },
+  {
+    title:"Alkusammutuksen perusteet",
+    category:"SUUNNITTEILLA",
+    description:"Tutustu alkusammutuksen turvallisuusperiaatteisiin.",
+    available:false,
+    icon:"fire"
+  },
+  {
+    title:"Ensiavun perusteet",
+    category:"SUUNNITTEILLA",
+    description:"Tutustu ensiavun keskeisiin periaatteisiin.",
+    available:false,
+    icon:"aid"
+  },
+  {
+    title:"Palokunnan kalustotuntemus",
+    category:"SUUNNITTEILLA",
+    description:"Opi tunnistamaan palokunnan tavallisia työvälineitä.",
+    available:false,
+    icon:"tools"
+  },
+  {
+    title:"Pelastustoiminnan perusteet",
+    category:"SUUNNITTEILLA",
+    description:"Tutustu pelastustoiminnan järjestämiseen ja turvallisuuteen.",
+    available:false,
+    icon:"shield"
+  },
+  {
+    title:"Sopimuspalokuntatoiminta",
+    category:"SUUNNITTEILLA",
+    description:"Mitä sopimuspalokunnissa tehdään ja miten toimintaan pääsee mukaan?",
+    available:false,
+    icon:"users"
+  }
+];
+
+const icons = {
+  radio:'<path d="M5 16a7 7 0 0 1 14 0M9 16a3 3 0 0 1 6 0M12 16v5M3 8a13 13 0 0 1 18 0"/>',
+  fire:'<path d="M12 22c-4.4 0-7-3-7-7 0-3 2-5 3-7 0 3 2 4 3 4 0-5 3-7 4-10 0 5 4 7 4 13 0 4-2.6 7-7 7z"/>',
+  aid:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M9 5V3h6v2M12 9v8M8 13h8"/>',
+  tools:'<path d="M14 7l3-3 3 3-3 3M3 21l10-10M13 11l-2-2M5 7l4-4 4 4-4 4z"/>',
+  shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  users:'<circle cx="9" cy="8" r="3"/><path d="M3 21v-3a6 6 0 0 1 12 0v3M16 5a3 3 0 0 1 0 6M17 15a5 5 0 0 1 4 5v1"/>'
+};
+
+function iconSvg(name) {
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+icons[name]+'</svg>';
+}
+
+function makeCard(c) {
+  return `
+    <article class="card">
+      <div class="card-top">${iconSvg(c.icon)}</div>
+      <div class="card-body">
+        <span class="tag ${c.available?'':'grey'}">${c.category}</span>
+        <h3>${c.title}</h3>
+        <p>${c.description}</p>
+        ${c.available
+          ? '<button class="card-link" onclick="openCourse()">Avaa kurssi &rarr;</button>'
+          : '<span style="font-size:13px;color:#7B8796">Ei vielä julkaistu</span>'}
+      </div>
+    </article>
+  `;
+}
+
+function renderCourses() {
+  document.getElementById("homeCourses").innerHTML =
+    courses.slice(0,3).map(makeCard).join("");
+  document.getElementById("allCourses").innerHTML =
+    courses.map(makeCard).join("");
+}
+
+const validPages = ["etusivu","kurssit","viestiliikenne","harjoitukset","kouluttajat","tietoa"];
+
+function showPage(id) {
+  if(!validPages.includes(id)) id="etusivu";
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.querySelectorAll("nav button").forEach(b=>{
+    b.classList.toggle("active",b.dataset.page===(id==="viestiliikenne"?"kurssit":id));
+  });
+  document.getElementById("nav").classList.remove("open");
+  document.getElementById("menuToggle").setAttribute("aria-expanded","false");
+  history.replaceState(null,"","#"+id);
+  window.scrollTo(0,0);
+}
+
+function toggleMenu() {
+  const nav=document.getElementById("nav");
+  nav.classList.toggle("open");
+  document.getElementById("menuToggle").setAttribute("aria-expanded",String(nav.classList.contains("open")));
+}
+
+function openCourse() {
+  showLesson(0);
+  showPage("viestiliikenne");
+}
+
+function showLesson(index) {
+  const pages=document.querySelectorAll(".lesson-content");
+  const buttons=document.querySelectorAll(".lesson-menu button");
+  pages.forEach((p,i)=>p.classList.toggle("selected",i===index));
+  buttons.forEach((b,i)=>b.classList.toggle("selected",i===index));
+  window.scrollTo(0,0);
+}
+
+const questions = [
+  {
+    q:"Miksi radioviestit kannattaa pitää selkeinä ja lyhyinä?",
+    options:["Jotta radioiden akut latautuvat","Jotta tärkeä tieto välittyy tehokkaasti","Jotta radiota ei tarvitse koskaan kuunnella"],
+    answer:1,
+    explanation:"Selkeä ja lyhyt viesti helpottaa tiedon ymmärtämistä ja vähentää turhaa radioliikennettä."
+  },
+  {
+    q:"Mitä kannattaa tehdä ennen puhepainikkeen painamista?",
+    options:["Kuunnella, onko radioliikenne vapaana","Sammuttaa laite","Vaihtaa sattumanvaraiseen puheryhmään"],
+    answer:0,
+    explanation:"Ennen lähetystä tulee varmistua siitä, että käytössä on oikea kanava tai puheryhmä ja että lähettäminen on mahdollista."
+  },
+  {
+    q:"Mihin PTT-painiketta käytetään?",
+    options:["Akun lataamiseen","Näytön kirkkauden säätämiseen","Puheen lähettämiseen"],
+    answer:2,
+    explanation:"PTT tarkoittaa Push-to-Talk eli paina puhuaksesi."
+  },
+  {
+    q:"Miten radiopuhelimen hätäpainikkeen kanssa toimitaan harjoituksessa?",
+    options:["Sitä kokeillaan huvin vuoksi","Sitä ei paineta ilman kouluttajan nimenomaista ohjetta ja asianmukaista järjestelyä","Sitä käytetään kuuluvuustestiin"],
+    answer:1,
+    explanation:"Hätäpainike on tarkoitettu hätätilanteisiin. Laitteissa sen toiminta voi vaihdella."
+  },
+  {
+    q:"Mikä seuraavista on hyvä radioviestin ominaisuus?",
+    options:["Pitkä ja epäselvä","Täynnä asiaan liittymätöntä puhetta","Asiallinen ja ymmärrettävä"],
+    answer:2,
+    explanation:"Asiallisuus ja ymmärrettävyys ovat radioliikenteen keskeisiä periaatteita."
+  }
+];
+
+function renderQuiz(id) {
+  const root=document.getElementById(id);
+  root.innerHTML=questions.map((q,i)=>`
+    <div class="quiz-question">
+      <h3>${i+1}. ${q.q}</h3>
+      ${q.options.map((o,j)=>`
+        <label class="quiz-option">
+          <input type="radio" name="${id}-q${i}" value="${j}">
+          <span>${o}</span>
+        </label>
+      `).join("")}
+    </div>
+  `).join("");
+}
+
+function gradeQuiz(id) {
+  let score=0;
+  let missing=0;
+  const feedback=[];
+  questions.forEach((q,i)=>{
+    const selected=document.querySelector('input[name="'+id+'-q'+i+'"]:checked');
+    if(!selected) {
+      missing++;
+      return;
+    }
+    const correct=Number(selected.value)===q.answer;
+    if(correct) score++;
+    feedback.push({
+      number:i+1,
+      correct,
+      explanation:q.explanation
+    });
+  });
+  const result=document.getElementById(id+"Result");
+  if(missing>0) {
+    result.innerHTML='<div class="notice" style="margin-top:20px">Vastaa vielä kaikkiin '+missing+' puuttuvaan kysymykseen.</div>';
+    return;
+  }
+  const passed=score>=4;
+  result.innerHTML=`
+    <div class="result">
+      <h3>Tuloksesi: ${score} / ${questions.length}</h3>
+      <p>${passed?"Hyvin tehty! Hallitset harjoituksen keskeiset perusteet.":"Hyvä yritys! Käy vielä kurssimateriaali läpi ja kokeile uudelleen."}</p>
+      <div style="margin-top:15px">
+        ${feedback.map(f=>`
+          <p><strong>${f.number}. ${f.correct?"Oikein":"Väärin"}</strong> – ${f.explanation}</p>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function resetQuiz(id) {
+  renderQuiz(id);
+  document.getElementById(id+"Result").innerHTML="";
+}
+
+const materials = {
+  radio:`VALMIRO – RADIOLIIKENTEEN PARIHARJOITUS
+
+Tarkoitus:
+Harjoitella selkeän radioviestin muodostamista.
+
+Tarvikkeet:
+Kouluttajan hyväksymät harjoitusradiot tai puheen harjoittelu ilman radiolaitteita.
+
+Toteutus:
+1. Kouluttaja esittelee harjoituksen ja käytettävän kutsutavan.
+2. Nuoret muodostavat parit.
+3. Pari harjoittelee kutsumista ja lyhyen viestin välittämistä.
+4. Osia vaihdetaan.
+5. Lopuksi käydään läpi, mikä onnistui ja mitä voidaan kehittää.
+
+Esimerkkitilanne:
+Kuvitteellinen yksikkö saapuu harjoituspaikalle ja ilmoittaa siitä johdolle.
+
+Turvallisuus:
+Käytä vain harjoitukseen hyväksyttyä laitetta ja kanavaa.
+Noudata oman organisaation ohjeita.
+Älä käytä viranomaisten operatiivista radioliikennettä luvatta.
+
+Valmiro – itsenäinen harjoitusmateriaali, ei virallinen koulutusohje.`,
+  checklist:`VALMIRO – VIESTILIIKENTEEN MUISTILISTA
+
+- Varmista oikea harjoituskanava tai puheryhmä.
+- Kuuntele ennen puhumista.
+- Mieti viesti valmiiksi.
+- Käytä kouluttajan ohjeistamaa kutsutapaa.
+- Puhu selkeästi ja rauhallisesti.
+- Pidä viesti lyhyenä ja asiallisena.
+- Vapauta puhepainike viestin lopuksi.
+- Älä paina hätäpainiketta harjoitusmielessä.
+- Noudata aina paikallisia ohjeita.
+
+Valmiro – itsenäinen harjoitusmateriaali.`
+};
+
+function downloadMaterial(type) {
+  const content=materials[type];
+  if(!content) return;
+  const blob=new Blob([content],{type:"text/plain;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const link=document.createElement("a");
+  link.href=url;
+  link.download="Valmiro-"+type+".txt";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+renderCourses();
+renderQuiz("courseQuiz");
+renderQuiz("practiceQuiz");
+document.getElementById("year").textContent=new Date().getFullYear();
+
+const initialPage=decodeURIComponent(location.hash.slice(1));
+showPage(validPages.includes(initialPage)?initialPage:"etusivu");
+</script>
+</body>
+</html>
