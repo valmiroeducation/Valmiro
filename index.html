@@ -5,842 +5,1647 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#111C2D">
-<meta name="description" content="Valmiro – itsenäinen oppimisympäristö palokuntanuorille.">
-<title>Valmiro – Osaaminen alkaa harjoittelemalla</title>
-
+<meta name="description" content="Valmiro – palokuntanuorten itsenäinen oppimisympäristö.">
+<title>Valmiro | Oppimisympäristö</title>
+<link rel="icon" type="image/png" href="./valmiro.png">
 <style>
 :root {
   --navy:#111C2D;
-  --navy2:#1B2A40;
+  --navy2:#19283C;
   --red:#E5484D;
-  --redlight:#FFF0F0;
-  --bg:#F5F7FA;
-  --white:#FFFFFF;
-  --text:#172235;
-  --muted:#637187;
-  --border:#E1E6ED;
-  --radius:14px;
+  --redDark:#BD353A;
+  --white:#fff;
+  --bg:#F4F6F9;
+  --ink:#192538;
+  --muted:#66758A;
+  --line:#E0E5EC;
+  --green:#23865E;
+  --radius:15px;
+  --shadow:0 10px 35px rgba(16,29,46,.06);
 }
 * { box-sizing:border-box; }
 html { scroll-behavior:smooth; }
 body {
   margin:0;
-  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
   background:var(--bg);
-  color:var(--text);
-  line-height:1.6;
+  color:var(--ink);
+  font:15px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif;
 }
-button { font:inherit; cursor:pointer; }
+button,input { font:inherit; }
+button { cursor:pointer; }
 a { color:inherit; text-decoration:none; }
-.container { max-width:1150px; margin:auto; padding:0 24px; }
+button:focus-visible,a:focus-visible,input:focus-visible {
+  outline:3px solid #F18E91;
+  outline-offset:3px;
+}
+.wrap { width:min(1180px,calc(100% - 40px)); margin:auto; }
+.hide { display:none!important; }
 
-header {
-  background:var(--navy);
-  color:white;
+.topbar {
   position:sticky;
   top:0;
-  z-index:50;
-  border-bottom:1px solid #27354A;
+  z-index:100;
+  background:rgba(17,28,45,.97);
+  backdrop-filter:blur(15px);
+  border-bottom:1px solid #2C3A50;
+  color:white;
 }
-.navbar {
+.topinner {
+  height:74px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  min-height:76px;
   gap:20px;
 }
-.brand { display:flex; align-items:center; gap:12px; font-weight:850; font-size:23px; letter-spacing:1px; }
-.brandmark {
-  width:42px;
-  height:42px;
-  background:var(--red);
-  border-radius:12px;
-  display:grid;
-  place-items:center;
-  color:white;
-  font-size:26px;
-}
-nav { display:flex; align-items:center; gap:26px; }
-nav button {
+.logo {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-size:22px;
+  font-weight:850;
+  letter-spacing:1px;
   background:none;
-  border:none;
-  color:#CBD4DF;
-  font-size:14px;
-  font-weight:600;
-  padding:10px 0;
+  border:0;
+  color:white;
+  padding:0;
 }
-nav button:hover,nav button.active { color:white; }
-nav button.active { box-shadow:0 2px var(--red); }
-.menu-toggle { display:none; background:none; color:white; border:0; font-size:25px; }
+.logo img {
+  width:46px;
+  height:46px;
+  object-fit:contain;
+  border-radius:50%;
+}
+.logo small {
+  display:block;
+  color:#AAB7C9;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:1.6px;
+  line-height:1.2;
+}
+nav { display:flex; align-items:center; gap:8px; }
+nav button {
+  color:#AEBBCC;
+  background:transparent;
+  border:0;
+  padding:10px 13px;
+  border-radius:8px;
+  font-weight:650;
+  font-size:13px;
+}
+nav button:hover,nav button.active {
+  color:white;
+  background:#2B3B51;
+}
+nav button.active { box-shadow:inset 0 -2px var(--red); }
+.mobile-menu { display:none; border:0; color:white; background:transparent; font-size:26px; }
+
+.view { display:none; animation:pageIn .35s ease both; }
+.view.active { display:block; }
+@keyframes pageIn {
+  from { opacity:0; transform:translateY(10px); }
+  to { opacity:1; transform:translateY(0); }
+}
+@keyframes rise {
+  from { opacity:0; transform:translateY(20px); }
+  to { opacity:1; transform:translateY(0); }
+}
+@keyframes pulse {
+  50% { box-shadow:0 0 0 9px rgba(229,72,77,0); }
+}
+@keyframes shimmer {
+  from { background-position:100% 0; }
+  to { background-position:0 0; }
+}
 
 .hero {
-  background:linear-gradient(115deg,#111C2D,#203450);
+  background:
+    radial-gradient(ellipse at 90% 25%,#314762 0%,transparent 43%),
+    linear-gradient(125deg,#111C2D,#1B2C43);
   color:white;
-  padding:104px 0 112px;
+  padding:100px 0 110px;
   position:relative;
   overflow:hidden;
 }
 .hero:after {
   content:"";
   position:absolute;
-  width:440px;
-  height:440px;
-  border:85px solid #FFFFFF06;
+  right:-150px;
+  top:-220px;
+  width:600px;
+  height:600px;
+  border:75px solid #FFFFFF07;
   border-radius:50%;
-  right:-170px;
-  top:-130px;
   pointer-events:none;
 }
+.hero-layout {
+  display:grid;
+  grid-template-columns:1.3fr .7fr;
+  gap:60px;
+  align-items:center;
+  position:relative;
+  z-index:1;
+}
 .eyebrow {
-  color:#FF8588;
-  text-transform:uppercase;
-  font-size:12px;
-  font-weight:800;
+  font-size:11px;
+  font-weight:850;
   letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--red);
 }
+.hero .eyebrow { color:#FF8588; }
 .hero h1 {
-  font-size:clamp(38px,5.4vw,68px);
-  line-height:1.09;
-  letter-spacing:-2px;
-  margin:20px 0;
-  max-width:760px;
+  font-size:clamp(39px,5.2vw,65px);
+  line-height:1.08;
+  letter-spacing:-2.4px;
+  margin:20px 0 22px;
+  font-weight:850;
 }
-.hero h1 span { color:#F47B7E; }
-.hero p { color:#C4CFDD; font-size:17px; max-width:580px; }
-.actions { display:flex; gap:12px; margin-top:30px; flex-wrap:wrap; }
+.hero h1 span { color:#F17B7E; }
+.hero p { color:#BBC7D8; max-width:610px; font-size:17px; }
+.hero-buttons { display:flex; flex-wrap:wrap; gap:12px; margin-top:30px; }
 .btn {
-  padding:12px 20px;
-  border:1px solid transparent;
-  border-radius:9px;
-  font-weight:750;
-  font-size:14px;
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  gap:8px;
+  gap:9px;
+  border:1px solid transparent;
+  border-radius:10px;
+  padding:12px 20px;
+  font-size:14px;
+  font-weight:750;
+  min-height:46px;
+  transition:.2s;
 }
-.btn-primary { background:var(--red); color:white; }
-.btn-primary:hover { background:#CB353A; }
-.btn-outline { border-color:#738197; background:transparent; color:white; }
-.btn-outline:hover { background:#FFFFFF12; }
-.btn-light { background:white; border-color:var(--border); color:var(--text); }
-.btn-light:hover { background:#F2F4F8; }
+.btn:hover { transform:translateY(-2px); }
+.btn-red { background:var(--red); color:white; }
+.btn-red:hover { background:var(--redDark); }
+.btn-white { background:white; color:var(--ink); }
+.btn-ghost { background:transparent; border-color:#64768F; color:white; }
+.btn-soft { background:#F0F3F7; color:var(--ink); border-color:var(--line); }
+.btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
 
-.page { display:none; min-height:65vh; }
-.page.active { display:block; }
+.hero-card {
+  background:#FFFFFF0D;
+  border:1px solid #FFFFFF24;
+  border-radius:20px;
+  padding:25px;
+  box-shadow:0 25px 70px #0002;
+  backdrop-filter:blur(8px);
+  animation:rise .8s .15s both;
+}
+.hero-card-head { display:flex; gap:12px; align-items:center; margin-bottom:20px; }
+.hero-card-head img { width:50px; height:50px; object-fit:contain; }
+.hero-card-head strong { display:block; font-size:15px; }
+.hero-card-head small { color:#9FACBE; }
+.hero-metric { border-top:1px solid #FFFFFF23; padding:16px 0; display:flex; justify-content:space-between; }
+.hero-metric span { color:#B7C6D8; }
+.hero-metric strong { font-size:20px; }
+.hero-card .minor { color:#B9C5D7; font-size:12px; margin:10px 0 0; }
+
 .section { padding:70px 0; }
-.section-head { margin-bottom:30px; }
-.section-head h2, .page-head h1 { margin:6px 0 8px; font-size:clamp(29px,4vw,39px); letter-spacing:-1px; line-height:1.2; }
-.section-head p, .page-head p { color:var(--muted); margin:0; max-width:680px; }
-.page-head { background:white; border-bottom:1px solid var(--border); padding:54px 0; }
-.page-head .eyebrow { color:var(--red); }
-
+.section-title { margin-bottom:30px; }
+.section-title h2,.page-title h1 {
+  font-size:clamp(28px,3.6vw,40px);
+  line-height:1.2;
+  letter-spacing:-1.3px;
+  margin:9px 0 10px;
+}
+.section-title p,.page-title p { color:var(--muted); margin:0; max-width:700px; }
+.page-title { background:white; border-bottom:1px solid var(--line); padding:55px 0; }
 .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; }
+
 .card {
   background:white;
-  border:1px solid var(--border);
+  border:1px solid var(--line);
   border-radius:var(--radius);
   overflow:hidden;
-  transition:transform .2s,box-shadow .2s;
+  box-shadow:var(--shadow);
+  transition:transform .23s,box-shadow .23s;
 }
-.card:hover { transform:translateY(-3px); box-shadow:0 12px 30px #14213A0D; }
-.card-body { padding:24px; }
-.card h3 { margin:10px 0 8px; font-size:19px; line-height:1.3; }
-.card p { color:var(--muted); margin:0 0 18px; font-size:14px; }
-.card-top {
-  background:var(--navy2);
-  height:140px;
+.card:hover {
+  transform:translateY(-5px);
+  box-shadow:0 18px 40px #101D2E17;
+}
+.card-visual {
+  height:115px;
+  background:
+    linear-gradient(140deg,#1E3049,#111C2D);
   display:flex;
   align-items:center;
-  justify-content:center;
-  color:white;
+  justify-content:space-between;
+  padding:25px;
+  color:#ECF1F7;
+  position:relative;
 }
-.card-top svg { width:55px; height:55px; stroke-width:1.4; }
-.tag {
-  display:inline-block;
-  background:var(--redlight);
-  color:#BB3035;
-  font-size:11px;
+.card-visual:after {
+  content:"";
+  position:absolute;
+  width:140px;
+  height:140px;
+  border:20px solid #FFFFFF0A;
+  border-radius:50%;
+  right:-45px;
+  top:-45px;
+}
+.card-icon {
+  font-size:35px;
   font-weight:800;
-  letter-spacing:.3px;
-  border-radius:5px;
-  padding:4px 9px;
+  letter-spacing:-3px;
+  color:#F17D81;
 }
-.tag.grey { background:#EEF1F5; color:#586476; }
-.card-link { color:#C7373C; font-weight:750; font-size:14px; border:0; background:transparent; padding:0; }
-.card-link:hover { text-decoration:underline; }
+.card-visual small { position:relative; z-index:1; letter-spacing:2px; color:#B3C0D2; }
+.card-body { padding:24px; }
+.card-body h3 { font-size:20px; line-height:1.3; margin:12px 0 8px; }
+.card-body p { color:var(--muted); font-size:14px; margin:0 0 22px; min-height:67px; }
+.pill {
+  border-radius:50px;
+  font-size:10px;
+  font-weight:850;
+  letter-spacing:.6px;
+  background:#FBECEE;
+  color:#BD383C;
+  padding:6px 10px;
+  display:inline-block;
+}
+.pill.dark { background:#EBEFF4; color:#526175; }
+.pill.green { background:#E1F5EA; color:#21784F; }
+.card-meta { display:flex; gap:12px; flex-wrap:wrap; color:#65758A; font-size:12px; margin:15px 0; }
+.card-footer { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.card-footer button { border:0; background:transparent; color:#C7373C; font-weight:800; padding:7px 0; }
 
-.feature-band { background:white; border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
-.features { display:grid; grid-template-columns:repeat(3,1fr); gap:30px; padding:45px 0; }
-.feature h3 { font-size:17px; margin:8px 0; }
-.feature p { color:var(--muted); font-size:14px; margin:0; }
+.surface { background:white; }
+.features { display:grid; grid-template-columns:repeat(3,1fr); gap:35px; }
 .feature-icon {
-  background:var(--redlight);
-  border-radius:10px;
-  width:45px;
-  height:45px;
   display:grid;
   place-items:center;
-  color:#C7373C;
-  font-weight:900;
+  height:47px;
+  width:47px;
+  border-radius:12px;
+  color:var(--red);
+  background:#FDECEE;
   font-size:22px;
+  font-weight:850;
 }
-.notice {
-  background:#FFF8EA;
-  border:1px solid #F0DEB9;
-  border-radius:10px;
-  color:#71551E;
-  padding:16px 20px;
-  font-size:14px;
-  margin-bottom:25px;
-}
-.panel {
+.features h3 { margin:15px 0 7px; font-size:18px; }
+.features p { color:var(--muted); margin:0; font-size:14px; }
+
+.box {
   background:white;
-  border:1px solid var(--border);
+  border:1px solid var(--line);
   border-radius:var(--radius);
-  padding:30px;
+  padding:26px;
 }
-.panel h2 { margin:0 0 15px; font-size:24px; }
-.panel h3 { margin:25px 0 8px; }
-.panel p { color:#47556A; }
-.panel ul { padding-left:22px; }
-.panel li { margin-bottom:9px; }
-.lesson-layout { display:grid; grid-template-columns:245px minmax(0,1fr); gap:25px; align-items:start; }
-.lesson-menu { padding:18px; }
-.lesson-menu button {
+.dashboard { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:26px; }
+.stat { background:white; border:1px solid var(--line); padding:25px; border-radius:var(--radius); }
+.stat strong { display:block; font-size:33px; line-height:1.2; }
+.stat span { display:block; color:var(--muted); font-size:13px; margin-top:8px; }
+.progress {
+  width:100%;
+  height:8px;
+  background:#E9EDF2;
+  border-radius:50px;
+  overflow:hidden;
+}
+.progress > div {
+  background:var(--red);
+  height:100%;
+  border-radius:50px;
+  width:0;
+  transition:width .6s;
+}
+.course-layout {
+  display:grid;
+  grid-template-columns:255px minmax(0,1fr);
+  gap:24px;
+  align-items:start;
+}
+.sidebar { position:sticky; top:98px; }
+.sidebar h3 { margin:0 0 14px; font-size:15px; }
+.lesson-btn {
+  border:0;
+  background:transparent;
   display:block;
   width:100%;
   text-align:left;
-  border:0;
-  border-radius:8px;
-  padding:12px;
-  background:transparent;
-  font-size:14px;
-  color:var(--muted);
+  padding:13px 12px;
+  border-radius:9px;
+  color:#5B697E;
+  font-size:13px;
   font-weight:650;
+  margin:3px 0;
 }
-.lesson-menu button.selected { background:var(--redlight); color:#BC353A; }
-.lesson-menu button:hover { background:#F3F5F8; }
-.lesson-content { display:none; }
-.lesson-content.selected { display:block; }
+.lesson-btn:hover { background:#F3F5F8; }
+.lesson-btn.active { color:#BF363A; background:#FDECEE; }
+.lesson-btn .number { margin-right:8px; opacity:.65; }
+.lesson {
+  animation:rise .35s both;
+  min-height:330px;
+}
+.lesson h2 { margin:10px 0 15px; font-size:29px; letter-spacing:-.8px; line-height:1.2; }
+.lesson h3 { font-size:19px; margin:25px 0 10px; }
+.lesson p { color:#425168; }
+.lesson ul { padding-left:23px; }
+.lesson li { margin:9px 0; }
 .callout {
+  background:#F5F7FA;
   border-left:4px solid var(--red);
-  background:#F8F9FC;
-  padding:16px 18px;
-  border-radius:0 8px 8px 0;
-  margin:22px 0;
+  padding:17px 20px;
+  border-radius:0 10px 10px 0;
+  margin:24px 0;
 }
+.callout strong { display:block; }
 .callout p { margin:5px 0 0; }
-.quiz-question { margin:0 0 24px; padding-bottom:24px; border-bottom:1px solid var(--border); }
-.quiz-question h3 { font-size:17px; margin:0 0 12px; }
-.quiz-option {
+.lesson-actions { display:flex; gap:10px; margin-top:30px; flex-wrap:wrap; }
+.note { color:var(--muted); font-size:13px; }
+.question {
+  padding:23px 0;
+  border-bottom:1px solid var(--line);
+}
+.question h3 { font-size:17px; margin:0 0 13px; }
+.option {
   display:flex;
-  gap:10px;
+  gap:12px;
   align-items:flex-start;
-  padding:12px;
-  border:1px solid var(--border);
-  border-radius:8px;
-  margin:8px 0;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:13px 15px;
   cursor:pointer;
+  margin:9px 0;
+  transition:.15s;
+}
+.option:hover { border-color:#B8C3D0; background:#F8F9FB; }
+.option:has(input:checked) { background:#FFF0F1; border-color:#E88387; }
+.option input { margin-top:5px; accent-color:var(--red); }
+.option.correct { border-color:#54B184; background:#EBF8F0; }
+.option.wrong { border-color:#E5484D; background:#FFF0F1; }
+.feedback {
+  margin:15px 0;
+  padding:19px;
+  background:#F0F5FB;
+  border-radius:11px;
+  border:1px solid #D6E2EF;
+}
+.feedback.success { background:#EDF9F2; border-color:#B8DEC8; }
+.feedback.error { background:#FFF0F1; border-color:#F0C2C5; }
+.feedback h3 { margin:0 0 7px; }
+.feedback p { margin:6px 0; }
+.scenario-choice {
+  width:100%;
+  text-align:left;
+  border:1px solid var(--line);
+  border-radius:11px;
+  padding:17px;
+  margin:8px 0;
+  background:white;
   font-size:14px;
 }
-.quiz-option:hover { background:#F8F9FC; }
-.quiz-option input { accent-color:var(--red); margin-top:4px; }
-.result {
-  background:#ECF8F0;
-  border:1px solid #B6DCC4;
-  padding:20px;
-  border-radius:10px;
-  margin-top:20px;
+.scenario-choice:hover { background:#F5F7FA; border-color:#AEBCCD; }
+.scenario-choice:disabled { cursor:default; opacity:.75; }
+.scene {
+  background:linear-gradient(125deg,#17263B,#263D57);
+  border-radius:13px;
+  color:white;
+  padding:26px;
+  margin:20px 0;
 }
-.result h3 { margin:0; }
-.result p { margin:8px 0 0; }
+.scene small { color:#F58B8D; font-weight:850; letter-spacing:1.5px; }
+.scene h2 { margin:12px 0; font-size:24px; }
+.scene p { color:#C4D0DE; }
+.scene .progress { background:#40526A; }
+.scene .progress > div { background:#F27E82; }
 
-footer { background:#101A29; color:#C1CBD8; padding:42px 0 20px; }
-.footer-row { display:flex; justify-content:space-between; gap:30px; flex-wrap:wrap; }
-footer h3 { color:white; margin:0 0 8px; letter-spacing:1px; }
-footer p { max-width:480px; font-size:13px; }
-footer button { border:0; background:none; color:#CBD4DF; margin:0 14px 5px 0; padding:5px 0; font-size:13px; }
-footer button:hover { color:white; }
-.copyright { border-top:1px solid #2C3849; padding-top:18px; margin-top:25px; font-size:12px; color:#93A2B6; }
+footer { background:#101A29; color:#BBC7D6; padding:45px 0 25px; margin-top:0; }
+.footer-grid { display:flex; justify-content:space-between; gap:40px; flex-wrap:wrap; }
+.footer-grid p { font-size:13px; max-width:480px; }
+.footer-grid button {
+  border:0;
+  background:transparent;
+  color:#BDC9D9;
+  display:block;
+  padding:5px;
+  text-align:left;
+}
+.footer-bottom { border-top:1px solid #2F3D51; margin-top:30px; padding-top:17px; font-size:12px; color:#9AA9BC; }
 
-@media(max-width:800px) {
-  .grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
-  .lesson-layout { grid-template-columns:1fr; }
-  .features { grid-template-columns:1fr; gap:22px; }
-  .menu-toggle { display:block; }
+@media(max-width:940px) {
+  .hero-layout { grid-template-columns:1fr; gap:35px; }
+  .hero-card { max-width:520px; }
+  .course-layout { grid-template-columns:1fr; }
+  .sidebar { position:static; }
+  .grid { grid-template-columns:repeat(2,1fr); }
+}
+@media(max-width:740px) {
+  .mobile-menu { display:block; }
   nav {
     display:none;
     position:absolute;
+    top:74px;
     left:0;
     right:0;
-    top:76px;
+    padding:15px 20px 24px;
     background:var(--navy);
-    padding:16px 24px 24px;
     flex-direction:column;
     align-items:stretch;
-    gap:6px;
-    box-shadow:0 18px 25px #0002;
+    border-bottom:1px solid #2F4159;
   }
   nav.open { display:flex; }
-  nav button { text-align:left; }
-  nav button.active { box-shadow:none; color:#FF888B; }
-}
-@media(max-width:560px) {
-  .container { padding:0 18px; }
+  .features { grid-template-columns:1fr; }
+  .dashboard { grid-template-columns:1fr; }
   .grid { grid-template-columns:1fr; }
-  .hero { padding:65px 0 76px; }
+  .hero { padding:70px 0; }
+  .section { padding:45px 0; }
+  .page-title { padding:40px 0; }
+  .box { padding:20px; }
   .hero h1 { letter-spacing:-1px; }
-  .section { padding:44px 0; }
-  .panel { padding:20px; }
-  .page-head { padding:40px 0; }
+}
+@media(prefers-reduced-motion:reduce) {
+  *,*:before,*:after {
+    animation:none!important;
+    transition:none!important;
+    scroll-behavior:auto!important;
+  }
 }
 </style>
 </head>
-
 <body>
 
-<header>
-  <div class="container navbar">
-    <a class="brand" href="#etusivu" onclick="showPage('etusivu')">
-      <span class="brandmark">V</span>
-      VALMIRO
-    </a>
-    <button class="menu-toggle" id="menuToggle" aria-label="Avaa valikko" aria-expanded="false" onclick="toggleMenu()">☰</button>
+<header class="topbar">
+  <div class="wrap topinner">
+    <button class="logo" onclick="go('home')">
+      <img src="./valmiro.png" alt="Valmiron logo">
+      <span>VALMIRO<small>OPPIMISYMPÄRISTÖ</small></span>
+    </button>
+    <button class="mobile-menu" onclick="toggleMenu()" aria-label="Avaa navigaatio" aria-expanded="false">☰</button>
     <nav id="nav">
-      <button data-page="etusivu" class="active" onclick="showPage('etusivu')">Etusivu</button>
-      <button data-page="kurssit" onclick="showPage('kurssit')">Kurssit</button>
-      <button data-page="harjoitukset" onclick="showPage('harjoitukset')">Harjoitukset</button>
-      <button data-page="kouluttajat" onclick="showPage('kouluttajat')">Kouluttajille</button>
-      <button data-page="tietoa" onclick="showPage('tietoa')">Tietoa meistä</button>
+      <button data-route="home" onclick="go('home')">Etusivu</button>
+      <button data-route="courses" onclick="go('courses')">Kurssit</button>
+      <button data-route="practice" onclick="go('practice')">Tilanneharjoitukset</button>
+      <button data-route="dashboard" onclick="go('dashboard')">Oma oppiminen</button>
+      <button data-route="about" onclick="go('about')">Tietoa</button>
     </nav>
   </div>
 </header>
 
 <main>
-
-<!-- ETUSIVU -->
-<div id="etusivu" class="page active">
-  <section class="hero">
-    <div class="container">
-      <div class="eyebrow">Palokuntanuorten oppimisympäristö</div>
-      <h1>Osaaminen alkaa <span>harjoittelemalla.</span></h1>
-      <p>Opi pelastusalan perusteita, kehitä taitojasi ja testaa osaamistasi. Valmiro tuo oppimateriaalit kaikkien saataville – maksutta.</p>
-      <div class="actions">
-        <button class="btn btn-primary" onclick="showPage('kurssit')">Tutustu kursseihin &rarr;</button>
-        <button class="btn btn-outline" onclick="showPage('harjoitukset')">Aloita harjoittelu</button>
-      </div>
-    </div>
-  </section>
-
-  <section class="feature-band">
-    <div class="container features">
-      <div class="feature">
-        <div class="feature-icon">✓</div>
-        <h3>Opi omaan tahtiin</h3>
-        <p>Käy oppimateriaaleja läpi silloin, kun sinulle sopii.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">?</div>
-        <h3>Testaa osaamistasi</h3>
-        <p>Harjoituskysymykset antavat palautteen suoraan selaimessa.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">↗</div>
-        <h3>Kehity palokuntalaisena</h3>
-        <p>Kertaa taitoja ja valmistaudu ohjattuihin harjoituksiin.</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container">
-      <div class="section-head">
-        <div class="eyebrow">Tutustu sisältöihin</div>
-        <h2>Aloita oppiminen</h2>
-        <p>Valitse aihe, johon haluat tutustua. Lisää kursseja julkaistaan myöhemmin.</p>
-      </div>
-      <div class="grid" id="homeCourses"></div>
-    </div>
-  </section>
-
-  <section class="section" style="padding-top:0">
-    <div class="container">
-      <div class="panel" style="background:var(--navy);color:white;border:0">
-        <div class="eyebrow">Mikä on Valmiro?</div>
-        <h2 style="margin:12px 0">Uusi tapa oppia palokuntatoiminnasta.</h2>
-        <p style="color:#C2CEDE;max-width:700px">Valmiro on itsenäinen, palokuntanuorille suunnattu oppimisprojekti. Tarkoitus on tarjota helposti ymmärrettävää tietoa ja käytännönläheisiä harjoituksia.</p>
-        <button class="btn btn-primary" onclick="showPage('tietoa')">Lue lisää &rarr;</button>
-      </div>
-    </div>
-  </section>
-</div>
-
-<!-- KURSSIT -->
-<div id="kurssit" class="page">
-  <div class="page-head"><div class="container">
-    <div class="eyebrow">Oppiminen</div>
-    <h1>Kurssikirjasto</h1>
-    <p>Tutustu eri aiheisiin ja kehitä osaamistasi.</p>
-  </div></div>
-  <section class="section"><div class="container">
-    <div class="notice">Valmiron sisällöt ovat itsenäisiä harjoitusmateriaaleja. Ne eivät korvaa palokunnan virallista koulutusta tai kouluttajan ohjeita.</div>
-    <div class="grid" id="allCourses"></div>
-  </div></section>
-</div>
-
-<!-- VIESTILIIKENNEKURSSI -->
-<div id="viestiliikenne" class="page">
-  <div class="page-head"><div class="container">
-    <div class="eyebrow">Peruskurssi · Viestiliikenne</div>
-    <h1>Viestiliikenteen perusteet</h1>
-    <p>Harjoittele radioliikenteen periaatteita selkeiden esimerkkien avulla.</p>
-  </div></div>
-  <section class="section"><div class="container">
-    <div class="lesson-layout">
-      <aside class="panel lesson-menu" aria-label="Kurssin osiot">
-        <button class="selected" onclick="showLesson(0)">01 · Johdanto</button>
-        <button onclick="showLesson(1)">02 · Radiopuhelimen käyttö</button>
-        <button onclick="showLesson(2)">03 · Radioliikenne</button>
-        <button onclick="showLesson(3)">04 · Harjoitustilanne</button>
-        <button onclick="showLesson(4)">05 · Osaamisen testaus</button>
-      </aside>
-      <div>
-        <article class="panel lesson-content selected">
-          <span class="tag">OSIO 1 / 5</span>
-          <h2>Johdanto viestiliikenteeseen</h2>
-          <p>Viestiliikenteen tehtävänä on välittää tietoa nopeasti, selkeästi ja ymmärrettävästi.</p>
-          <h3>Miksi viestiliikennettä harjoitellaan?</h3>
-          <ul>
-            <li>Viestit ymmärretään oikein.</li>
-            <li>Tarpeeton puhe ei kuormita radioliikennettä.</li>
-            <li>Yksiköt voivat välittää keskeisiä tietoja toisilleen.</li>
-            <li>Radioiden käyttö tulee tutuksi turvallisessa harjoituksessa.</li>
-          </ul>
-          <div class="callout"><strong>Muista</strong><p>Oikeissa tilanteissa noudatetaan aina oman organisaation viestiliikenneohjeita.</p></div>
-          <button class="btn btn-primary" onclick="showLesson(1)">Seuraava osio &rarr;</button>
-        </article>
-
-        <article class="panel lesson-content">
-          <span class="tag">OSIO 2 / 5</span>
-          <h2>Radiopuhelimen käyttö</h2>
-          <p>Radiopuhelimen perustoiminnot on hyvä tunnistaa ennen käytännön harjoituksia.</p>
-          <h3>Puhepainike eli tangentti</h3>
-          <p>Monissa radiopuhelimissa lähetys käynnistetään painamalla PTT-painiketta. Odota, että lähetys on valmis alkamaan, ja puhu selkeästi. Vapauta painike viestin lopuksi.</p>
-          <h3>Ennen lähettämistä</h3>
-          <ul>
-            <li>Varmista, että käytössä on harjoitukseen määrätty puheryhmä tai kanava.</li>
-            <li>Kuuntele, onko radioliikenne vapaana.</li>
-            <li>Suunnittele lyhyt ja ymmärrettävä viesti.</li>
-            <li>Älä kokeile hätäpainiketta.</li>
-          </ul>
-          <div class="callout"><strong>Huomio</strong><p>Toiminnot ja merkkivalot vaihtelevat radiomallin mukaan. Kouluttaja opastaa harjoituslaitteen käyttöön.</p></div>
-          <button class="btn btn-primary" onclick="showLesson(2)">Seuraava osio &rarr;</button>
-        </article>
-
-        <article class="panel lesson-content">
-          <span class="tag">OSIO 3 / 5</span>
-          <h2>Radioliikenteen perusteet</h2>
-          <p>Radioviestin tulee olla mahdollisimman selkeä ja tarkoituksenmukainen.</p>
-          <h3>Kutsuminen</h3>
-          <p>Eräs harjoituksissa käytettävä kutsutapa on kutsuttavan tunnus ensin ja oma tunnus sen jälkeen.</p>
-          <div class="callout">
-            <strong>Harjoitusesimerkki – kuvitteelliset tunnukset</strong>
-            <p>Yksikkö 131: "Johto, 131."</p>
-            <p>Johto: "Johto."</p>
-            <p>Yksikkö 131: "131 kohteessa."</p>
+  <section class="view" id="home">
+    <div class="hero">
+      <div class="wrap hero-layout">
+        <div>
+          <div class="eyebrow">Palokuntanuorten digitaalinen oppimisympäristö</div>
+          <h1>Valmius syntyy <span>osaamisesta.</span></h1>
+          <p>Kehitä osaamistasi pelastusalan perusteissa. Opiskele, sovella oppimaasi ja haasta itsesi – omaan tahtiin.</p>
+          <div class="hero-buttons">
+            <button class="btn btn-red" onclick="go('courses')">Tutustu kursseihin →</button>
+            <button class="btn btn-ghost" onclick="go('practice')">Tilanneharjoitukset</button>
           </div>
-          <p>Käytettävä kutsutapa riippuu toiminnan ohjeista. Tämä esimerkki ei ole yleispätevä VIRVE-ohje.</p>
-          <h3>Hyvän viestin ominaisuudet</h3>
-          <ul><li>Lyhyt</li><li>Ymmärrettävä</li><li>Asiallinen</li><li>Tarvittaessa vahvistettu</li></ul>
-          <button class="btn btn-primary" onclick="showLesson(3)">Seuraava osio &rarr;</button>
-        </article>
-
-        <article class="panel lesson-content">
-          <span class="tag">OSIO 4 / 5</span>
-          <h2>Harjoitustilanne</h2>
-          <p>Olet kuvitteellisen yksikön 131 radioliikenteestä vastaava henkilö.</p>
-          <p>Yksikkönne on saapunut koulutusrastille, ja sinun tulee ilmoittaa asiasta harjoituksen johdolle.</p>
-          <h3>Tehtävä</h3>
-          <p>Muodosta lyhyt viesti, jossa tunnistat vastaanottajan ja oman yksikkösi sekä ilmoitat saapumisen.</p>
-          <div class="callout"><strong>Esimerkkiratkaisu</strong><p>"Johto, 131." – "Johto." – "131 saapunut harjoituspaikalle."</p></div>
-          <p>Tämä on kuvitteellinen kirjallinen harjoitus. Älä käytä oikeita viranomaispuheryhmiä harjoitteluun ilman lupaa ja ohjausta.</p>
-          <button class="btn btn-primary" onclick="showLesson(4)">Siirry kokeeseen &rarr;</button>
-        </article>
-
-        <article class="panel lesson-content">
-          <span class="tag">OSIO 5 / 5</span>
-          <h2>Testaa osaamistasi</h2>
-          <p>Vastaa kysymyksiin. Saat tuloksesi heti, eikä vastauksia lähetetä palvelimelle.</p>
-          <div id="courseQuiz"></div>
-          <button class="btn btn-primary" onclick="gradeQuiz('courseQuiz')">Tarkista vastaukset</button>
-          <div id="courseQuizResult" aria-live="polite"></div>
-        </article>
+        </div>
+        <div class="hero-card">
+          <div class="hero-card-head">
+            <img src="./valmiro.png" alt="">
+            <div><strong>Valmiro Learning</strong><small>Oppimisen yleiskatsaus</small></div>
+          </div>
+          <div class="hero-metric"><span>Oppimiskokonaisuuksia</span><strong>4</strong></div>
+          <div class="hero-metric"><span>Tilanneharjoituksia</span><strong>3</strong></div>
+          <div class="hero-metric"><span>Palvelun käyttö</span><strong>0 €</strong></div>
+          <div class="progress"><div style="width:100%"></div></div>
+          <p class="minor">Avoin oppimisympäristö ilman kirjautumista.</p>
+        </div>
       </div>
     </div>
-  </div></section>
-</div>
-
-<!-- HARJOITUKSET -->
-<div id="harjoitukset" class="page">
-  <div class="page-head"><div class="container">
-    <div class="eyebrow">Osaamisen testaus</div>
-    <h1>Harjoitukset</h1>
-    <p>Kertaa asioita ja kokeile, kuinka hyvin osaat viestiliikenteen perusteet.</p>
-  </div></div>
-  <section class="section"><div class="container" style="max-width:850px">
-    <div class="panel">
-      <span class="tag">TIETOVISA</span>
-      <h2>Viestiliikenteen harjoituskoe</h2>
-      <p>Viisi kysymystä, yksi oikea vastaus kuhunkin. Ei aikarajaa eikä kirjautumista.</p>
-      <div id="practiceQuiz"></div>
-      <button class="btn btn-primary" onclick="gradeQuiz('practiceQuiz')">Tarkista vastaukset</button>
-      <button class="btn btn-light" onclick="resetQuiz('practiceQuiz')">Aloita uudelleen</button>
-      <div id="practiceQuizResult" aria-live="polite"></div>
+    <div class="surface section">
+      <div class="wrap features">
+        <div><div class="feature-icon">01</div><h3>Opi perusteet</h3><p>Jäsennellyt kurssit ja soveltavat oppimistehtävät.</p></div>
+        <div><div class="feature-icon">02</div><h3>Harjoittele päätöksiä</h3><p>Tilanneharjoituksia, joissa valinnoilla on seurauksia.</p></div>
+        <div><div class="feature-icon">03</div><h3>Seuraa kehittymistä</h3><p>Kurssien edistyminen säilyy omassa selaimessasi.</p></div>
+      </div>
     </div>
-  </div></section>
-</div>
-
-<!-- KOULUTTAJILLE -->
-<div id="kouluttajat" class="page">
-  <div class="page-head"><div class="container">
-    <div class="eyebrow">Harjoitusten suunnittelu</div>
-    <h1>Kouluttajille</h1>
-    <p>Materiaaleja ja ideoita palokuntanuorten harjoitusten tueksi.</p>
-  </div></div>
-  <section class="section"><div class="container">
-    <div class="grid">
-      <div class="card"><div class="card-body">
-        <span class="tag">HARJOITUSIDEA</span>
-        <h3>Radioliikenteen pariharjoitus</h3>
-        <p>Nuoret muodostavat pareittain radioviestejä kuvitteellisissa tilanteissa.</p>
-        <button class="card-link" onclick="downloadMaterial('radio')">Lataa harjoitusohje ↓</button>
-      </div></div>
-      <div class="card"><div class="card-body">
-        <span class="tag">MATERIAALI</span>
-        <h3>Viestiliikenteen muistilista</h3>
-        <p>Lyhyt kertaus selkeän radioviestin muodostamisesta.</p>
-        <button class="card-link" onclick="downloadMaterial('checklist')">Lataa muistilista ↓</button>
-      </div></div>
-      <div class="card"><div class="card-body">
-        <span class="tag grey">TULOSSA</span>
-        <h3>Lisää koulutusmateriaaleja</h3>
-        <p>Materiaalikirjastoa voidaan laajentaa uusilla harjoituksilla.</p>
-        <span style="color:var(--muted);font-size:14px">Ei vielä saatavilla</span>
-      </div></div>
+    <div class="section">
+      <div class="wrap">
+        <div class="section-title">
+          <div class="eyebrow">Oppimispolku</div>
+          <h2>Valitse seuraava haasteesi</h2>
+          <p>Teorian lisäksi kurssit sisältävät vaikeampia soveltavia kysymyksiä.</p>
+        </div>
+        <div id="homeCourseGrid" class="grid"></div>
+      </div>
     </div>
-  </div></section>
-</div>
+  </section>
 
-<!-- TIETOA -->
-<div id="tietoa" class="page">
-  <div class="page-head"><div class="container">
-    <div class="eyebrow">Valmiro</div>
-    <h1>Tietoa palvelusta</h1>
-    <p>Oppimista, harjoittelua ja osaamisen kehittämistä.</p>
-  </div></div>
-  <section class="section"><div class="container" style="max-width:880px">
-    <div class="panel">
-      <h2>Mikä on Valmiro?</h2>
-      <p>Valmiro on itsenäinen verkkopohjainen oppimisprojekti, joka on suunnattu erityisesti palokuntanuorille ja palokuntatoiminnasta kiinnostuneille.</p>
-      <p>Sen tavoitteena on tarjota selkeitä oppimateriaaleja, harjoituksia ja mahdollisuuksia oman osaamisen testaamiseen.</p>
-      <h3>Maksuton ja avoin</h3>
-      <p>Valmiron julkisia oppimateriaaleja voi käyttää ilman käyttäjätiliä tai rekisteröitymistä.</p>
-      <h3>Turvallisuus ja vastuu</h3>
-      <p>Valmiro ei ole virallinen pelastusalan oppilaitos eikä sen harjoituksista saa virallista pätevyyttä. Sisällöt ovat yleistä oppimista varten, eivätkä korvaa kouluttajan ohjeita, hyväksyttyä koulutusta tai turvallisuusmääräyksiä.</p>
-      <h3>Tietosuoja</h3>
-      <p>Tässä ensimmäisessä versiossa Valmiro ei pyydä nimiä, sähköpostiosoitteita tai muita käyttäjätietoja. Harjoitusvastaukset käsitellään selaimessa eikä niitä tallenneta sivuston omaan tietokantaan. Sivuston ylläpitopalvelu voi käsitellä teknisiä yhteystietoja.</p>
-      <p style="font-size:13px;color:var(--muted)">Huomio ylläpitäjälle: tarkista ja täydennä palvelun tiedot sekä tietosuojakuvaus ennen julkaisua.</p>
-    </div>
-  </div></section>
-</div>
+  <section class="view" id="courses">
+    <div class="page-title"><div class="wrap">
+      <div class="eyebrow">Kurssikirjasto</div>
+      <h1>Oppimiskokonaisuudet</h1>
+      <p>Neljä aihealuetta, itsenäistä opiskelua ja osaamisen arviointia.</p>
+    </div></div>
+    <div class="section"><div class="wrap">
+      <div class="feedback" style="margin-top:0">
+        Materiaalit ovat itsenäistä harjoittelua varten. Niillä ei korvata virallista pelastusalan koulutusta tai oman palokunnan ohjeita.
+      </div>
+      <div id="courseGrid" class="grid"></div>
+    </div></div>
+  </section>
+
+  <section class="view" id="course">
+    <div class="page-title"><div class="wrap">
+      <button class="btn btn-soft" onclick="go('courses')">← Kaikki kurssit</button>
+      <div style="height:18px"></div>
+      <div class="eyebrow" id="courseLabel"></div>
+      <h1 id="courseName"></h1>
+      <p id="courseDescription"></p>
+    </div></div>
+    <div class="section"><div class="wrap course-layout">
+      <aside class="box sidebar">
+        <h3>Kurssin sisältö</h3>
+        <div id="lessonNav"></div>
+        <div style="margin-top:25px">
+          <div class="note" id="courseProgressText"></div>
+          <div class="progress" style="margin-top:9px"><div id="courseProgressBar"></div></div>
+        </div>
+      </aside>
+      <div class="box">
+        <div id="lessonContainer"></div>
+      </div>
+    </div></div>
+  </section>
+
+  <section class="view" id="practice">
+    <div class="page-title"><div class="wrap">
+      <div class="eyebrow">Soveltava oppiminen</div>
+      <h1>Tilanneharjoitukset</h1>
+      <p>Harjoittele tilannearviointia kuvitteellisissa tilanteissa.</p>
+    </div></div>
+    <div class="section"><div class="wrap">
+      <div class="feedback" style="margin-top:0">Tilanteet ovat turvallisuuspainotteisia oppimistehtäviä, eivät oikeiden hälytystehtävien toimintaohjeita.</div>
+      <div class="grid" id="scenarioGrid"></div>
+    </div></div>
+  </section>
+
+  <section class="view" id="scenario">
+    <div class="page-title"><div class="wrap">
+      <button class="btn btn-soft" onclick="go('practice')">← Harjoituksiin</button>
+      <h1 id="scenarioHeading" style="margin-top:20px"></h1>
+      <p id="scenarioDescription"></p>
+    </div></div>
+    <div class="section"><div class="wrap" style="max-width:850px">
+      <div id="scenarioContent" class="box"></div>
+    </div></div>
+  </section>
+
+  <section class="view" id="dashboard">
+    <div class="page-title"><div class="wrap">
+      <div class="eyebrow">Oma oppiminen</div>
+      <h1>Edistymisesi</h1>
+      <p>Henkilökohtainen paikallinen oppimisnäkymä ilman käyttäjätiliä.</p>
+    </div></div>
+    <div class="section"><div class="wrap">
+      <div class="dashboard">
+        <div class="stat"><strong id="doneCount">0</strong><span>Hyväksytysti suoritettua kurssia</span></div>
+        <div class="stat"><strong id="bestAverage">–</strong><span>Suoritettujen kokeiden keskiarvo</span></div>
+        <div class="stat"><strong id="scenarioCount">0</strong><span>Harjoiteltua tilannetta</span></div>
+      </div>
+      <div class="box">
+        <h2>Kurssikohtainen eteneminen</h2>
+        <div id="progressList"></div>
+        <div class="feedback" style="margin-top:25px">
+          <strong>Tietojen säilyminen</strong>
+          <p>Edistyminen tallennetaan tämän selaimen localStorageen. Se ei siirry automaattisesti muille laitteille. Selaintietojen poistaminen voi poistaa tulokset.</p>
+        </div>
+        <button class="btn btn-soft" onclick="clearProgress()">Tyhjennä omat suoritustiedot</button>
+      </div>
+    </div></div>
+  </section>
+
+  <section class="view" id="about">
+    <div class="page-title"><div class="wrap">
+      <div class="eyebrow">Tietoa palvelusta</div>
+      <h1>Mikä on Valmiro?</h1>
+      <p>Itsenäinen oppimisprojekti palokuntanuorille.</p>
+    </div></div>
+    <div class="section"><div class="wrap" style="max-width:860px">
+      <div class="box">
+        <h2>Valmius syntyy osaamisesta.</h2>
+        <p>Valmiro tarjoaa verkossa käytettäviä oppimismateriaaleja, harjoituskokeita ja kuvitteellisia tilanneharjoituksia palokuntanuorille ja pelastustoiminnasta kiinnostuneille.</p>
+        <h3>Itsenäinen oppimispalvelu</h3>
+        <p>Valmiro ei ole virallinen pelastusalan oppilaitos, viranomaisten palvelu eikä pätevyyksiä myöntävä organisaatio. Kurssisuoritukset ovat tämän palvelun omia harjoitustuloksia.</p>
+        <h3>Turvallisuus</h3>
+        <p>Harjoituksissa noudatetaan aina oman palokunnan kouluttajien, vastuuhenkilöiden ja viranomaisten ohjeita. Käytännön harjoituksia ei tule toteuttaa ilman asianmukaista ohjausta.</p>
+        <h3>Tietojen käsittely</h3>
+        <p>Valmiro ei tässä versiossa sisällä kirjautumista, lomakkeita tai omaa palvelintietokantaa. Käyttäjän vastauksia ja edistymistä tallennetaan paikallisesti selaimeen. Sivuston hosting-palveluntarjoaja voi käsitellä teknisiä lokitietoja, kuten IP-osoitteita.</p>
+        <div class="feedback">
+          <strong>Ylläpitäjälle ennen julkista käyttöönottoa</strong>
+          <p>Täydennä tähän oikeat ylläpitotiedot, yhteydenottotapa ja tarkistettu tietosuojakuvaus. Oppisisällöt kannattaa hyväksyttää kokeneella kouluttajalla.</p>
+        </div>
+      </div>
+    </div></div>
+  </section>
 </main>
 
 <footer>
-  <div class="container">
-    <div class="footer-row">
+  <div class="wrap">
+    <div class="footer-grid">
       <div>
-        <h3>VALMIRO</h3>
-        <p>Itsenäinen oppimisympäristö palokuntanuorille. Osaaminen alkaa harjoittelemalla.</p>
+        <strong style="font-size:22px;letter-spacing:1px;color:white">VALMIRO</strong>
+        <p>Palokuntanuorten itsenäinen digitaalinen oppimisympäristö.</p>
+        <p>Osaaminen. Harjoittelu. Valmius.</p>
       </div>
       <div>
-        <button onclick="showPage('kurssit')">Kurssit</button>
-        <button onclick="showPage('harjoitukset')">Harjoitukset</button>
-        <button onclick="showPage('kouluttajat')">Kouluttajille</button>
-        <button onclick="showPage('tietoa')">Tietoa</button>
+        <button onclick="go('courses')">Kurssikirjasto</button>
+        <button onclick="go('practice')">Tilanneharjoitukset</button>
+        <button onclick="go('dashboard')">Oma oppiminen</button>
+        <button onclick="go('about')">Tietoa palvelusta</button>
       </div>
     </div>
-    <div class="copyright">© <span id="year"></span> Valmiro · Itsenäinen oppimisprojekti, ei virallinen pelastusviranomaisen palvelu.</div>
+    <div class="footer-bottom">© <span id="copyrightYear"></span> Valmiro · Itsenäinen oppimisprojekti · Ei virallinen koulutus- tai pelastusviranomaispalvelu</div>
   </div>
 </footer>
 
 <script>
+"use strict";
+
+/* ===========================================
+   VALMIRO 2.0
+   Oppimissisällöt
+   =========================================== */
+
 const courses = [
   {
-    title:"Viestiliikenteen perusteet",
-    category:"PERUSKURSSI",
-    description:"Radiopuhelimen käyttö, kutsuminen ja selkeä viestiliikenne.",
-    available:true,
-    icon:"radio"
+    id:"radio",
+    name:"Viestiliikenteen perusteet",
+    category:"Viestiliikenne",
+    icon:"RX",
+    duration:"35–50 min",
+    description:"Radioliikenteen periaatteet, viestien muodostaminen ja virhetilanteiden tunnistaminen.",
+    lessons:[
+      {
+        title:"Viestiliikenteen toimintaperiaatteet",
+        content:`
+          <p>Pelastustoiminnassa viestiliikenteen tarkoituksena on varmistaa, että tehtävän kannalta tärkeä tieto välittyy ymmärrettävästi ja oikea-aikaisesti.</p>
+          <h3>Viestiliikenteen kuormitus</h3>
+          <p>Radioliikenteessä samaan puheryhmään kuuluvat käyttäjät voivat joutua odottamaan lähetysvuoroa. Tarpeeton viestintä voi viivästyttää tärkeää tietoa.</p>
+          <ul>
+            <li>Viestin sisältö suunnitellaan ennen lähettämistä.</li>
+            <li>Käytetään organisaation hyväksymiä tunnuksia ja kutsutapoja.</li>
+            <li>Tärkeät tiedot ilmaistaan selkeästi ja yksiselitteisesti.</li>
+            <li>Epäselvä viesti pyydetään toistamaan.</li>
+          </ul>
+          <div class="callout"><strong>Pohdintatehtävä</strong><p>Miksi pitkä, epäselvä viesti voi olla ongelmallinen tilanteessa, jossa useat yksiköt tarvitsevat samaa puheryhmää?</p></div>
+        `
+      },
+      {
+        title:"Radiolaitteen käyttö ja turvallisuus",
+        content:`
+          <p>Radiopuhelimen käyttäjän tulee tuntea laitteen perustoiminnot, toimintatila ja käyttörajoitukset.</p>
+          <h3>Verkkotila ja suorakanavatila</h3>
+          <p>VIRVE-verkon kautta toimiva viestintä käyttää verkkoinfrastruktuuria. Suorakanavatoiminnassa yhteys muodostetaan laitteiden välillä paikallisesti, eikä sen kantamaa voida olettaa samaksi kuin verkkoyhteyden.</p>
+          <h3>Puhepainike</h3>
+          <p>PTT-painike käynnistää lähettämisen. Laitteen ilmoituksia ja mahdollista lähetyslupaa tulee noudattaa. Jos lähetys ei onnistu, viestiä ei pidä olettaa toimitetuksi.</p>
+          <h3>Hätäpainike</h3>
+          <p>Hätäpainikkeen toiminta riippuu laitteen ja verkon asetuksista. Painiketta ei koskaan kokeilla oma-aloitteisesti.</p>
+          <div class="callout"><strong>Turvallisuushuomio</strong><p>Harjoituksissa käytetään vain kouluttajan osoittamia laitteita, kanavia ja puheryhmiä.</p></div>
+        `
+      },
+      {
+        title:"Viesti, kuittaus ja epäselvyydet",
+        content:`
+          <p>Yksiselitteisessä radioviestissä käy ilmi, kenelle puhutaan, kuka puhuu ja mikä asia halutaan välittää. Tarkka muoto riippuu organisaation ohjeistuksesta.</p>
+          <h3>Harjoitusesimerkki</h3>
+          <div class="callout"><strong>Kuvitteellinen koulutustilanne</strong>
+          <p>Yksikkö: "Harjoitusjohto, yksikkö 131."</p>
+          <p>Johto: "Harjoitusjohto kuulee."</p>
+          <p>Yksikkö: "131 saapunut koulutusrastille."</p>
+          <p>Johto: "Vastaanotettu."</p></div>
+          <h3>Jos viestiä ei ymmärretä</h3>
+          <ul>
+            <li>Älä arvaa puuttuvaa tai epäselvää tietoa.</li>
+            <li>Pyydä viesti tai sen epäselvä osa toistamaan.</li>
+            <li>Varmista kriittinen tieto organisaation käytäntöjen mukaan.</li>
+          </ul>
+          <p>Erityisesti toimintaa muuttava tieto edellyttää täsmällisyyttä.</p>
+        `
+      }
+    ],
+    questions:[
+      {
+        q:"Puheryhmässä on runsaasti liikennettä. Sinulla on pitkä ilmoitus, jossa on sekä oleellista että epäoleellista tietoa. Mikä toimintatapa on perustelluin?",
+        answers:[
+          "Lähetän kaiken mahdollisimman nopeasti.",
+          "Muodostan lyhyen, tehtävän kannalta oleellisen viestin.",
+          "Vaihdan oma-aloitteisesti toiseen puheryhmään.",
+          "Jätän kaiken ilmoittamatta."
+        ],
+        correct:1,
+        why:"Viestissä välitetään oleellinen tieto selkeästi. Puheryhmän vaihtamisesta päätetään ohjeiden mukaisesti."
+      },
+      {
+        q:"Laitteesi ei anna lähetyslupaa. Mitä voit päätellä?",
+        answers:[
+          "Viestin vastaanottaja kuuli sen varmasti.",
+          "Viestisi tallentui automaattisesti.",
+          "Viestin perillemenoa ei voi olettaa.",
+          "Laitteessa on varmasti akku loppu."
+        ],
+        correct:2,
+        why:"Lähetys ei välttämättä ole käynnistynyt. Syyt ja ilmoitukset riippuvat laitteesta."
+      },
+      {
+        q:"Miten verkkotila ja suorakanavatila eroavat toisistaan?",
+        answers:[
+          "Suorakanava käyttää aina tukiasemaverkkoa.",
+          "Kumpikin toimii kaikissa tilanteissa samalla kantamalla.",
+          "Verkkotila käyttää verkkoinfrastruktuuria, suorakanava paikallista laitteiden välistä yhteyttä.",
+          "Suorakanava tarkoittaa tavallista puhelinverkkoa."
+        ],
+        correct:2,
+        why:"Suorakanavalla käytettävien laitteiden sijainti ja radio-olosuhteet vaikuttavat kuuluvuuteen."
+      },
+      {
+        q:"Saat epäselvän viestin, jonka perusteella pitäisi muuttaa toimintaa. Mitä teet?",
+        answers:[
+          "Arvaan viestin todennäköisen merkityksen.",
+          "Pyydän epäselvän tiedon toistamista tai vahvistamista.",
+          "Vastaan myöntävästi, vaikka en ymmärtänyt.",
+          "Jätän laitteen kuuntelematta."
+        ],
+        correct:1,
+        why:"Epäselvää toimintaan vaikuttavaa tietoa ei pidä tulkita arvauksella."
+      },
+      {
+        q:"Mikä väite hätäpainikkeesta pitää paikkansa?",
+        answers:[
+          "Se toimii kaikissa radiomalleissa täsmälleen samoin.",
+          "Sitä kannattaa kokeilla, jos radioliikenne ei kuulu.",
+          "Sen vaikutus riippuu laitteesta ja asetuksista.",
+          "Painikkeella ei voi aiheuttaa turhia hälytyksiä."
+        ],
+        correct:2,
+        why:"Hätäpainikkeiden toiminnot ja hälytysten reititys vaihtelevat. Testaus tapahtuu vain sovitusti."
+      }
+    ]
   },
   {
-    title:"Alkusammutuksen perusteet",
-    category:"SUUNNITTEILLA",
-    description:"Tutustu alkusammutuksen turvallisuusperiaatteisiin.",
-    available:false,
-    icon:"fire"
+    id:"safety",
+    name:"Turvallisuus ja riskien tunnistaminen",
+    category:"Turvallisuus",
+    icon:"TS",
+    duration:"30–45 min",
+    description:"Turvallinen toiminta harjoituksissa, vaarojen ennakointi ja puuttuminen riskitilanteisiin.",
+    lessons:[
+      {
+        title:"Turvallisuuden periaatteet",
+        content:`
+          <p>Harjoituksen turvallisuus perustuu suunnitteluun, valvontaan ja osallistujien kykyyn tunnistaa riskejä.</p>
+          <h3>Ennen harjoitusta</h3>
+          <ul>
+            <li>Selvitetään kouluttajan ohjeet ja harjoitusalueen rajat.</li>
+            <li>Tutustutaan käytettäviin välineisiin.</li>
+            <li>Tunnistetaan mahdolliset vaaratekijät.</li>
+            <li>Tiedetään, miten vaaratilanteesta ilmoitetaan.</li>
+          </ul>
+          <div class="callout"><strong>Tärkeää</strong><p>Nuori ei ryhdy itsenäisesti vaaralliseen tehtävään. Harjoituksen vastuuhenkilö vastaa toiminnan turvallisesta toteuttamisesta.</p></div>
+        `
+      },
+      {
+        title:"Dynaaminen riskien arviointi",
+        content:`
+          <p>Turvallisuus ei ole vain harjoituksen alussa tehtävä tarkistus. Olosuhteet voivat muuttua kesken toiminnan.</p>
+          <h3>Esimerkkejä muutoksista</h3>
+          <ul>
+            <li>Alueelle ilmestyy sivullisia.</li>
+            <li>Sää muuttaa harjoituspaikan liukkaaksi.</li>
+            <li>Kalustossa huomataan vaurio.</li>
+            <li>Osallistuja ilmoittaa voivansa huonosti.</li>
+          </ul>
+          <p>Kun riski kasvaa, toiminta keskeytetään tarvittaessa ja vastuuhenkilölle ilmoitetaan.</p>
+        `
+      },
+      {
+        title:"Poikkeamista ilmoittaminen",
+        content:`
+          <p>Turvallisuuskulttuurissa myös läheltä piti -tilanteet otetaan vakavasti.</p>
+          <h3>Miksi niistä kerrotaan?</h3>
+          <p>Läheltä piti -tilanteessa vahinkoa ei välttämättä syntynyt, mutta tapahtumasta voidaan oppia ja estää myöhempi onnettomuus.</p>
+          <div class="callout"><strong>Esimerkkitilanne</strong><p>Huomaat ennen harjoitusta välineessä vaurion. Vaikka väline saattaisi vielä toimia, sen käyttöä ei tule jatkaa ennen vastuuhenkilön arviota.</p></div>
+        `
+      }
+    ],
+    questions:[
+      {
+        q:"Harjoitusalueelle tulee ulkopuolinen henkilö. Mitä teet?",
+        answers:[
+          "Jatkan normaalisti.",
+          "Ilmoitan tilanteesta kouluttajalle ja huomioin turvallisuuden.",
+          "Pyydän muita jättämään hänet huomiotta.",
+          "Siirrän harjoituksen omin päin uuteen paikkaan."
+        ],
+        correct:1,
+        why:"Ulkopuoliset voivat muuttaa riskitilannetta. Vastuuhenkilö arvioi jatkotoimet."
+      },
+      {
+        q:"Mikä kuvaa dynaamista riskien arviointia?",
+        answers:[
+          "Riskit arvioidaan vain kerran vuodessa.",
+          "Riskejä arvioidaan olosuhteiden muuttuessa.",
+          "Riskit arvioidaan vasta vahingon jälkeen.",
+          "Riskiarviointi kuuluu vain harjoituksen osallistujille."
+        ],
+        correct:1,
+        why:"Olosuhteiden muutoksia pitää seurata myös harjoituksen aikana."
+      },
+      {
+        q:"Havaitset vaurioituneen välineen ennen harjoitusta. Mikä on oikein?",
+        answers:[
+          "Kokeilen välinettä ennen ilmoittamista.",
+          "Annan sen toiselle käytettäväksi.",
+          "Jätän välineen käyttämättä ja ilmoitan kouluttajalle.",
+          "Korjaan sen ilman lupaa."
+        ],
+        correct:2,
+        why:"Viallisen välineen käyttö voi aiheuttaa vaaran."
+      },
+      {
+        q:"Miksi läheltä piti -tilanteesta kannattaa ilmoittaa?",
+        answers:[
+          "Jotta tilanteesta voidaan oppia.",
+          "Vain jos joku loukkaantui.",
+          "Jotta kukaan ei saa tietää tapahtumasta.",
+          "Koska jokainen poikkeama tarkoittaa rikosta."
+        ],
+        correct:0,
+        why:"Poikkeamien käsittely parantaa turvallisuutta."
+      },
+      {
+        q:"Kaverisi voi huonosti kesken harjoituksen. Miten toimit?",
+        answers:[
+          "Kehotan jatkamaan loppuun.",
+          "Jätän hänet yksin.",
+          "Ilmoitan heti kouluttajalle ja huolehdin tilanteen turvallisuudesta.",
+          "Oletan tilanteen olevan leikkiä."
+        ],
+        correct:2,
+        why:"Vointi voi muuttua nopeasti. Asianmukainen apu ja aikuisen arvio ovat tärkeitä."
+      }
+    ]
   },
   {
-    title:"Ensiavun perusteet",
-    category:"SUUNNITTEILLA",
-    description:"Tutustu ensiavun keskeisiin periaatteisiin.",
-    available:false,
-    icon:"aid"
+    id:"firstaid",
+    name:"Ensiavun päätöksenteko",
+    category:"Ensiapu",
+    icon:"EA",
+    duration:"35–50 min",
+    description:"Hätätilanteen tunnistaminen, avun hälyttäminen ja turvallinen ensitoiminta.",
+    lessons:[
+      {
+        title:"Tilannearvio",
+        content:`
+          <p>Ensiaputilanteessa tärkeää on ensin tunnistaa mahdolliset vaarat ja arvioida avun tarvetta.</p>
+          <h3>Ensimmäiset havainnot</h3>
+          <ul>
+            <li>Onko paikka turvallinen auttajalle ja autettavalle?</li>
+            <li>Reagoiko henkilö puhutteluun?</li>
+            <li>Onko tilanteessa merkkejä vakavasta hädästä?</li>
+            <li>Tarvitaanko välitöntä hätäilmoitusta?</li>
+          </ul>
+          <p>Hengenvaaralliselta vaikuttavassa tilanteessa soitetaan 112 ja noudatetaan hätäkeskuksen ohjeita.</p>
+        `
+      },
+      {
+        title:"Hätäilmoituksen rakenne",
+        content:`
+          <p>Hätäkeskukselle kerrotaan mahdollisimman tarkasti, mitä on tapahtunut ja missä apua tarvitaan.</p>
+          <h3>Olennaiset asiat</h3>
+          <ul>
+            <li>Tapahtumapaikan mahdollisimman tarkka sijainti.</li>
+            <li>Mitä on tapahtunut.</li>
+            <li>Montako apua tarvitsevaa henkilöä on.</li>
+            <li>Millaisia vaaroja tapahtumapaikalla on.</li>
+          </ul>
+          <div class="callout"><strong>Muista</strong><p>Vastaa päivystäjän kysymyksiin, kuuntele ohjeita ja lopeta puhelu vasta saadessasi siihen luvan.</p></div>
+        `
+      },
+      {
+        title:"Toiminta oman osaamisen rajoissa",
+        content:`
+          <p>Hyvä auttaja tunnistaa myös oman osaamisensa rajat. Kaikkea ei tarvitse osata itse.</p>
+          <h3>Turvallinen auttaminen</h3>
+          <p>Älä aseta itseäsi vaaraan. Ohjaa muita turvalliseen paikkaan, kun se on mahdollista, ja pyydä tarvittaessa lisäapua.</p>
+          <p>Jos henkilö on eloton, aloitetaan hätäkeskuksen ohjeistama elvytys. Käytännön elvytys- ja ensiaputaidot tulee opetella hyväksytyssä ohjatussa koulutuksessa.</p>
+          <div class="callout"><strong>Harjoituksen raja</strong><p>Tämä verkkokurssi ei anna ensiapupätevyyttä tai korvaa käytännön taitoharjoittelua.</p></div>
+        `
+      }
+    ],
+    questions:[
+      {
+        q:"Saavut tilanteeseen, jossa ihminen makaa liikkumatta lähellä mahdollisesti vaarallista sähköjohtoa. Mitä arvioit ensimmäiseksi?",
+        answers:[
+          "Voinko lähestyä turvallisesti?",
+          "Mikä henkilön nimi on?",
+          "Onko hänen puhelimensa ehjä?",
+          "Voinko siirtää johdon paljain käsin?"
+        ],
+        correct:0,
+        why:"Auttajan ja muiden turvallisuus arvioidaan ensin. Älä koske mahdollisesti jännitteiseen johtoon."
+      },
+      {
+        q:"Milloin 112-numeroon soittaminen on perusteltua?",
+        answers:[
+          "Kun tilanne vaikuttaa hengenvaaralliselta tai tarvitaan kiireellistä viranomaisapua.",
+          "Aina kun halutaan harjoitella puhumista.",
+          "Vasta kun tiedetään potilaan henkilötunnus.",
+          "Vain silloin, kun paikalla on kouluttaja."
+        ],
+        correct:0,
+        why:"Hätätilanteissa ei pidä viivytellä hätäilmoituksen kanssa."
+      },
+      {
+        q:"Miksi tarkka sijainti on hätäilmoituksessa tärkeä?",
+        answers:[
+          "Se vähentää puhelun hintaa.",
+          "Se auttaa avun ohjaamisessa oikeaan paikkaan.",
+          "Se korvaa tapahtumatietojen kertomisen.",
+          "Se estää lisäkysymykset."
+        ],
+        correct:1,
+        why:"Avun lähettäminen ja perille pääsy edellyttävät mahdollisimman tarkkaa sijaintitietoa."
+      },
+      {
+        q:"Hätäkeskuspäivystäjä esittää lisäkysymyksiä. Mitä teet?",
+        answers:[
+          "Lopetan puhelun.",
+          "Vastaan parhaani mukaan ja noudatan ohjeita.",
+          "Arvaan kaikki tiedot.",
+          "Jätän puhelimen maahan."
+        ],
+        correct:1,
+        why:"Päivystäjän kysymykset tukevat tilanteen arviointia ja oikean avun järjestämistä."
+      },
+      {
+        q:"Mikä on verkkokurssin ja käytännön ensiapukoulutuksen ero?",
+        answers:[
+          "Verkkokurssi antaa automaattisesti virallisen pätevyyden.",
+          "Käytännön taitoja ei tarvitse harjoitella.",
+          "Verkkokurssi tukee tietoa, mutta ei yksin varmista käytännön osaamista.",
+          "Ensiapua ei voi oppia kouluttajan kanssa."
+        ],
+        correct:2,
+        why:"Taitojen harjoittelu ohjatusti on olennainen osa ensiapuosaamista."
+      }
+    ]
   },
   {
-    title:"Palokunnan kalustotuntemus",
-    category:"SUUNNITTEILLA",
-    description:"Opi tunnistamaan palokunnan tavallisia työvälineitä.",
-    available:false,
-    icon:"tools"
-  },
-  {
-    title:"Pelastustoiminnan perusteet",
-    category:"SUUNNITTEILLA",
-    description:"Tutustu pelastustoiminnan järjestämiseen ja turvallisuuteen.",
-    available:false,
-    icon:"shield"
-  },
-  {
-    title:"Sopimuspalokuntatoiminta",
-    category:"SUUNNITTEILLA",
-    description:"Mitä sopimuspalokunnissa tehdään ja miten toimintaan pääsee mukaan?",
-    available:false,
-    icon:"users"
+    id:"organization",
+    name:"Pelastustoiminnan organisaatio",
+    category:"Pelastustoimi",
+    icon:"PO",
+    duration:"30–45 min",
+    description:"Pelastuslaitokset, sopimuspalokunnat, johtaminen ja yhteistyö eri viranomaisten välillä.",
+    lessons:[
+      {
+        title:"Pelastustoimen rakenne",
+        content:`
+          <p>Suomessa pelastustoimella on tehtäviä muun muassa onnettomuuksien ehkäisyssä, pelastustoiminnassa ja varautumisessa.</p>
+          <h3>Keskeiset toimijat</h3>
+          <ul>
+            <li>Pelastustoimen järjestämisestä vastaavat hyvinvointialueet ja Helsingin kaupunki.</li>
+            <li>Pelastuslaitokset hoitavat alueellaan pelastustoimen tehtäviä.</li>
+            <li>Sopimuspalokunnat osallistuvat toimintaan alueellisten sopimusten ja tehtävien mukaisesti.</li>
+          </ul>
+          <p>Organisaatioiden tehtävät ja vastuut on määritelty lainsäädännössä ja sopimuksissa.</p>
+        `
+      },
+      {
+        title:"Johtaminen ja vastuut",
+        content:`
+          <p>Pelastustoiminnassa johtamisen tarkoituksena on koordinoida toimintaa ja ylläpitää tilannekuvaa.</p>
+          <h3>Miksi johtaminen on tärkeää?</h3>
+          <ul>
+            <li>Tehtävät ja vastuut ovat selkeitä.</li>
+            <li>Tiedot kootaan yhteiseksi tilannekuvaksi.</li>
+            <li>Resurssit kohdennetaan tarkoituksenmukaisesti.</li>
+            <li>Toiminnan turvallisuutta voidaan valvoa.</li>
+          </ul>
+          <div class="callout"><strong>Pohdinta</strong><p>Miksi ristiriitaiset ohjeet eri henkilöiltä voisivat vaarantaa yhteistoiminnan?</p></div>
+        `
+      },
+      {
+        title:"Sopimuspalokunnat ja nuorisotoiminta",
+        content:`
+          <p>Sopimuspalokuntatoiminta on tärkeä osa suomalaista pelastustoimea. Palokuntanuorisotoiminta puolestaan tarjoaa mahdollisuuden oppia turvallisuustaitoja, ryhmätyötä ja palokuntatoiminnan perusteita.</p>
+          <h3>Nuorisotoiminnan tavoitteita</h3>
+          <ul>
+            <li>Turvallisuustaitojen kehittäminen.</li>
+            <li>Yhteistyö- ja vuorovaikutustaitojen harjoittelu.</li>
+            <li>Palokuntatoimintaan tutustuminen.</li>
+            <li>Vastuullisen toiminnan oppiminen.</li>
+          </ul>
+          <p>Nuorisotoimintaan osallistuminen ei itsessään anna oikeutta osallistua vaarallisiin pelastustehtäviin.</p>
+        `
+      }
+    ],
+    questions:[
+      {
+        q:"Mikä on pelastustoiminnan johtamisen keskeinen tehtävä?",
+        answers:[
+          "Poistaa kaikki viestintä yksiköiden välillä.",
+          "Koordinoida toimintaa ja ylläpitää tilannekuvaa.",
+          "Siirtää vastuu aina nuorimmalle osallistujalle.",
+          "Korvata viranomaisyhteistyö."
+        ],
+        correct:1,
+        why:"Johtaminen tukee koordinaatiota, resurssien käyttöä ja turvallisuutta."
+      },
+      {
+        q:"Miten sopimuspalokunta voi osallistua pelastustoimintaan?",
+        answers:[
+          "Alueellisten sopimusten ja tehtävien mukaisesti.",
+          "Aina täysin ilman johtamisjärjestelmää.",
+          "Vain nuorten harjoituksissa.",
+          "Ilman mitään koulutusvaatimuksia."
+        ],
+        correct:0,
+        why:"Sopimuspalokuntien asema ja tehtävät perustuvat sopimuksiin sekä toimintaa koskeviin vaatimuksiin."
+      },
+      {
+        q:"Mikä kuvaa palokuntanuorisotoimintaa?",
+        answers:[
+          "Se korvaa pelastajan ammattikoulutuksen.",
+          "Se antaa oikeuden toimia yksin vaarallisessa tehtävässä.",
+          "Se tarjoaa ohjattua turvallisuus- ja palokuntatoiminnan oppimista.",
+          "Se on pelkästään aikuisille."
+        ],
+        correct:2,
+        why:"Nuorisotoiminnan ytimessä ovat turvallinen oppiminen ja yhdessä tekeminen."
+      },
+      {
+        q:"Miksi yhteinen tilannekuva on tärkeä?",
+        answers:[
+          "Kaikki voivat tehdä päätöksiä satunnaisesti.",
+          "Se vähentää tarvetta ymmärtää tapahtumien kokonaisuutta.",
+          "Se auttaa muodostamaan yhteisen käsityksen tilanteesta.",
+          "Se korvaa kaikki turvallisuusohjeet."
+        ],
+        correct:2,
+        why:"Yhteinen tilannekuva tukee johdonmukaista yhteistyötä."
+      },
+      {
+        q:"Mikä taho vastaa pelastustoimen järjestämisestä Suomessa?",
+        answers:[
+          "Ainoastaan yksittäiset VPK-yhdistykset.",
+          "Hyvinvointialueet ja Helsinki omalla alueellaan.",
+          "Jokainen nuoriso-osasto itsenäisesti.",
+          "Ainoastaan Hätäkeskuslaitos."
+        ],
+        correct:1,
+        why:"Pelastustoimen järjestämisvastuu kuuluu hyvinvointialueille sekä Helsingin kaupungille."
+      }
+    ]
   }
 ];
 
-const icons = {
-  radio:'<path d="M5 16a7 7 0 0 1 14 0M9 16a3 3 0 0 1 6 0M12 16v5M3 8a13 13 0 0 1 18 0"/>',
-  fire:'<path d="M12 22c-4.4 0-7-3-7-7 0-3 2-5 3-7 0 3 2 4 3 4 0-5 3-7 4-10 0 5 4 7 4 13 0 4-2.6 7-7 7z"/>',
-  aid:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M9 5V3h6v2M12 9v8M8 13h8"/>',
-  tools:'<path d="M14 7l3-3 3 3-3 3M3 21l10-10M13 11l-2-2M5 7l4-4 4 4-4 4z"/>',
-  shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
-  users:'<circle cx="9" cy="8" r="3"/><path d="M3 21v-3a6 6 0 0 1 12 0v3M16 5a3 3 0 0 1 0 6M17 15a5 5 0 0 1 4 5v1"/>'
-};
+/* ===========================================
+   TILANNEHARJOITUKSET
+   Kaikki tunnukset ja tilanteet kuvitteellisia.
+   =========================================== */
 
-function iconSvg(name) {
-  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+icons[name]+'</svg>';
+const scenarios = [
+  {
+    id:"radioevent",
+    title:"Epäselvä radioviesti",
+    category:"Viestiliikenne",
+    intro:"Olet nuorten viestiliikenneharjoituksessa. Saat radiolla epäselvän ilmoituksen, jossa kerrotaan ryhmän siirtymisestä.",
+    steps:[
+      {
+        question:"Et kuullut siirtymispaikkaa. Mitä teet?",
+        choices:[
+          {text:"Toimin arvauksen perusteella.",good:false,feedback:"Epäselvä sijaintitieto voi johtaa väärään paikkaan."},
+          {text:"Pyydän lähettäjää toistamaan epäselvän osan.",good:true,feedback:"Oikein. Epäselvä tieto pitää varmistaa."},
+          {text:"Suljen radion ja odotan.",good:false,feedback:"Tilanne ei ratkea eikä yhteys säily."}
+        ]
+      },
+      {
+        question:"Saat toistetun viestin mutta et ole varma, koskeeko se omaa ryhmääsi. Mikä on turvallisin ratkaisu?",
+        choices:[
+          {text:"Varmistan vastaanottajan ja ohjeen.",good:true,feedback:"Oikein. Ohjeen kohdentuminen täytyy ymmärtää."},
+          {text:"Välitän ohjeen kaikille ilman tarkistusta.",good:false,feedback:"Varmistamaton tieto voi aiheuttaa sekaannusta."},
+          {text:"Päätän itse uuden tehtävän.",good:false,feedback:"Harjoituksessa toimitaan sovittujen ohjeiden mukaan."}
+        ]
+      }
+    ]
+  },
+  {
+    id:"trainingrisk",
+    title:"Poikkeama harjoitusalueella",
+    category:"Turvallisuus",
+    intro:"Harjoitus on käynnissä. Huomaat, että yksi harjoitusväline on vaurioitunut, vaikka sitä ollaan juuri ottamassa käyttöön.",
+    steps:[
+      {
+        question:"Mikä on ensimmäinen oikea toimenpide?",
+        choices:[
+          {text:"Annan harjoituksen jatkua.",good:false,feedback:"Vaurio voi aiheuttaa vaaratilanteen."},
+          {text:"Keskeytän kyseisen välineen käytön ja ilmoitan kouluttajalle.",good:true,feedback:"Oikein. Vaurioitunutta välinettä ei käytetä ilman asianmukaista arviota."},
+          {text:"Korjaan välineen itse.",good:false,feedback:"Korjaaminen vaatii asianmukaisen osaamisen ja valtuutuksen."}
+        ]
+      },
+      {
+        question:"Mitään vahinkoa ei ehtinyt sattua. Miten toimit jälkikäteen?",
+        choices:[
+          {text:"Asia unohdetaan, koska vahinkoa ei syntynyt.",good:false,feedback:"Läheltä piti -tilanteista kannattaa oppia."},
+          {text:"Kerron havainnosta ja varmistan asian käsittelyn kouluttajan kanssa.",good:true,feedback:"Oikein. Poikkeamien käsittely parantaa turvallisuutta."},
+          {text:"Piilotan välineen.",good:false,feedback:"Vaarallisen välineen piilottaminen ei ole asianmukainen toimintatapa."}
+        ]
+      }
+    ]
+  },
+  {
+    id:"publicevent",
+    title:"Avuntarve yleisötapahtumassa",
+    category:"Ensiapu",
+    intro:"Olet tapahtumassa, jossa huomaat henkilön kaatuvan. Paikalla on muitakin ihmisiä.",
+    steps:[
+      {
+        question:"Mikä on perustelluin ensimmäinen toimintatapa?",
+        choices:[
+          {text:"Arvioin paikan turvallisuutta ja henkilön avuntarvetta.",good:true,feedback:"Oikein. Turvallisuus ja tilanteen arviointi ovat keskeisiä."},
+          {text:"Poistun kertomatta tilanteesta kenellekään.",good:false,feedback:"Avuntarve voi jäädä huomaamatta."},
+          {text:"Alan siirtää henkilöä ilman syytä.",good:false,feedback:"Tarpeeton siirtely voi aiheuttaa lisää haittaa."}
+        ]
+      },
+      {
+        question:"Henkilö ei reagoi puhutteluun. Mitä teet?",
+        choices:[
+          {text:"Oletan hänen nukkuvan.",good:false,feedback:"Reagoimattomuus voi olla vakavan hätätilanteen merkki."},
+          {text:"Hälytän apua 112:sta ja noudatan hätäkeskuksen ohjeita, mukaan lukien hengityksen arviointi.",good:true,feedback:"Oikein. Hätäkeskus ohjaa asianmukaista ensiapua."},
+          {text:"Odotan tilanteen ratkeamista itsestään.",good:false,feedback:"Avun viivästyminen voi vaarantaa henkilön."}
+        ]
+      }
+    ]
+  }
+];
+
+/* ===========================================
+   SOVELLUKSEN TILA
+   =========================================== */
+
+const STORAGE_KEY="valmiro_v2_progress";
+
+function emptyProgress() {
+  return {lessons:{},scores:{},scenarios:{}};
 }
 
-function makeCard(c) {
-  return `
-    <article class="card">
-      <div class="card-top">${iconSvg(c.icon)}</div>
-      <div class="card-body">
-        <span class="tag ${c.available?'':'grey'}">${c.category}</span>
-        <h3>${c.title}</h3>
-        <p>${c.description}</p>
-        ${c.available
-          ? '<button class="card-link" onclick="openCourse()">Avaa kurssi &rarr;</button>'
-          : '<span style="font-size:13px;color:#7B8796">Ei vielä julkaistu</span>'}
-      </div>
-    </article>
-  `;
+function loadProgress() {
+  try {
+    const stored=JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if(!stored || typeof stored!=="object") return emptyProgress();
+    return {
+      lessons:stored.lessons||{},
+      scores:stored.scores||{},
+      scenarios:stored.scenarios||{}
+    };
+  } catch(e) {
+    return emptyProgress();
+  }
 }
 
-function renderCourses() {
-  document.getElementById("homeCourses").innerHTML =
-    courses.slice(0,3).map(makeCard).join("");
-  document.getElementById("allCourses").innerHTML =
-    courses.map(makeCard).join("");
+let progress=loadProgress();
+let selectedCourse=null;
+let selectedLesson=0;
+let currentScenario=null;
+let scenarioStep=0;
+let scenarioPoints=0;
+let scenarioLocked=false;
+
+function saveProgress() {
+  try {
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(progress));
+  } catch(e) {
+    console.warn("Edistymistä ei voitu tallentaa.");
+  }
 }
 
-const validPages = ["etusivu","kurssit","viestiliikenne","harjoitukset","kouluttajat","tietoa"];
+function safeText(value) {
+  return String(value).replace(/[&<>"']/g,c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",
+    '"':"&quot;","'":"&#39;"
+  }[c]));
+}
 
-function showPage(id) {
-  if(!validPages.includes(id)) id="etusivu";
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-  document.querySelectorAll("nav button").forEach(b=>{
-    b.classList.toggle("active",b.dataset.page===(id==="viestiliikenne"?"kurssit":id));
-  });
+function courseById(id) {
+  return courses.find(c=>c.id===id);
+}
+
+function completedLessons(c) {
+  const set=progress.lessons[c.id]||[];
+  return c.lessons.filter((_,i)=>set.includes(i)).length;
+}
+
+function passed(c) {
+  return (progress.scores[c.id]||0)>=80;
+}
+
+function coursePercent(c) {
+  const units=c.lessons.length+1;
+  return Math.round((completedLessons(c)+(passed(c)?1:0))/units*100);
+}
+
+/* ===========================================
+   NAVIGOINTI
+   =========================================== */
+
+const routes=["home","courses","course","practice","scenario","dashboard","about"];
+
+function go(id) {
+  if(!routes.includes(id)) id="home";
+  document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===id));
+  const navRoute=id==="course"?"courses":id==="scenario"?"practice":id;
+  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.route===navRoute));
   document.getElementById("nav").classList.remove("open");
-  document.getElementById("menuToggle").setAttribute("aria-expanded","false");
-  history.replaceState(null,"","#"+id);
+  document.querySelector(".mobile-menu").setAttribute("aria-expanded","false");
+  if(id==="home"||id==="courses") renderCourseCards();
+  if(id==="dashboard") renderDashboard();
+  if(id==="practice") renderScenarios();
+  const hashes={home:"#home",courses:"#courses",practice:"#practice",dashboard:"#dashboard",about:"#about"};
+  if(hashes[id]) history.replaceState(null,"",hashes[id]);
   window.scrollTo(0,0);
 }
 
 function toggleMenu() {
-  const nav=document.getElementById("nav");
-  nav.classList.toggle("open");
-  document.getElementById("menuToggle").setAttribute("aria-expanded",String(nav.classList.contains("open")));
+  const n=document.getElementById("nav");
+  n.classList.toggle("open");
+  document.querySelector(".mobile-menu").setAttribute("aria-expanded",String(n.classList.contains("open")));
 }
 
-function openCourse() {
-  showLesson(0);
-  showPage("viestiliikenne");
+/* ===========================================
+   KURSSIKORTIT
+   =========================================== */
+
+function renderCourseCards() {
+  const html=courses.map(c=>{
+    const value=coursePercent(c);
+    return `
+      <article class="card">
+        <div class="card-visual">
+          <strong class="card-icon">${safeText(c.icon)}</strong>
+          <small>VALMIRO / ${safeText(c.category.toUpperCase())}</small>
+        </div>
+        <div class="card-body">
+          <span class="pill ${passed(c)?"green":""}">
+            ${passed(c)?"HYVÄKSYTYSTI SUORITETTU":"OPPIMISKOKONAISUUS"}
+          </span>
+          <h3>${safeText(c.name)}</h3>
+          <p>${safeText(c.description)}</p>
+          <div class="card-meta">
+            <span>◷ ${safeText(c.duration)}</span>
+            <span>◈ ${c.lessons.length} teoriaosiota</span>
+          </div>
+          <div class="progress"><div style="width:${value}%"></div></div>
+          <div class="card-footer">
+            <small class="note">${value}% suoritettu</small>
+            <button onclick="openCourse('${c.id}')">
+              ${value?"Jatka":"Aloita kurssi"} →
+            </button>
+          </div>
+        </div>
+      </article>
+    `;
+  }).join("");
+  document.getElementById("homeCourseGrid").innerHTML=html;
+  document.getElementById("courseGrid").innerHTML=html;
 }
 
-function showLesson(index) {
-  const pages=document.querySelectorAll(".lesson-content");
-  const buttons=document.querySelectorAll(".lesson-menu button");
-  pages.forEach((p,i)=>p.classList.toggle("selected",i===index));
-  buttons.forEach((b,i)=>b.classList.toggle("selected",i===index));
+/* ===========================================
+   KURSSIN LUKEMINEN
+   =========================================== */
+
+function openCourse(id) {
+  const c=courseById(id);
+  if(!c) return;
+  selectedCourse=id;
+  selectedLesson=0;
+  document.getElementById("courseLabel").textContent=c.category+" / Oppimiskokonaisuus";
+  document.getElementById("courseName").textContent=c.name;
+  document.getElementById("courseDescription").textContent=c.description;
+  go("course");
+  renderLesson();
+}
+
+function renderLesson() {
+  const c=courseById(selectedCourse);
+  if(!c) return;
+  const completed=progress.lessons[c.id]||[];
+  const items=c.lessons.map((lesson,i)=>`
+    <button class="lesson-btn ${selectedLesson===i?"active":""}"
+      onclick="selectLesson(${i})">
+      <span class="number">${String(i+1).padStart(2,"0")}</span>
+      ${safeText(lesson.title)}
+      ${completed.includes(i)?" ✓":""}
+    </button>
+  `).join("");
+  document.getElementById("lessonNav").innerHTML=
+    items+`
+    <button class="lesson-btn ${selectedLesson===c.lessons.length?"active":""}"
+      onclick="selectLesson(${c.lessons.length})">
+      <span class="number">EX</span> Osaamisen arviointi
+      ${passed(c)?" ✓":""}
+    </button>`;
+  document.getElementById("courseProgressText").textContent=
+    "Kurssin eteneminen: "+coursePercent(c)+"%";
+  document.getElementById("courseProgressBar").style.width=coursePercent(c)+"%";
+
+  if(selectedLesson===c.lessons.length) {
+    renderExam(c);
+    return;
+  }
+
+  const lesson=c.lessons[selectedLesson];
+  const isDone=completed.includes(selectedLesson);
+  document.getElementById("lessonContainer").innerHTML=`
+    <article class="lesson">
+      <span class="pill">TEORIA · ${selectedLesson+1}/${c.lessons.length}</span>
+      <h2>${safeText(lesson.title)}</h2>
+      ${lesson.content}
+      <div class="lesson-actions">
+        <button class="btn btn-red" onclick="completeLesson()">
+          ${isDone?"Jatka seuraavaan →":"Merkitse luetuksi ja jatka →"}
+        </button>
+        ${selectedLesson>0?'<button class="btn btn-soft" onclick="selectLesson('+(selectedLesson-1)+')">← Edellinen</button>':""}
+      </div>
+    </article>`;
+}
+
+function selectLesson(index) {
+  selectedLesson=index;
+  renderLesson();
   window.scrollTo(0,0);
 }
 
-const questions = [
-  {
-    q:"Miksi radioviestit kannattaa pitää selkeinä ja lyhyinä?",
-    options:["Jotta radioiden akut latautuvat","Jotta tärkeä tieto välittyy tehokkaasti","Jotta radiota ei tarvitse koskaan kuunnella"],
-    answer:1,
-    explanation:"Selkeä ja lyhyt viesti helpottaa tiedon ymmärtämistä ja vähentää turhaa radioliikennettä."
-  },
-  {
-    q:"Mitä kannattaa tehdä ennen puhepainikkeen painamista?",
-    options:["Kuunnella, onko radioliikenne vapaana","Sammuttaa laite","Vaihtaa sattumanvaraiseen puheryhmään"],
-    answer:0,
-    explanation:"Ennen lähetystä tulee varmistua siitä, että käytössä on oikea kanava tai puheryhmä ja että lähettäminen on mahdollista."
-  },
-  {
-    q:"Mihin PTT-painiketta käytetään?",
-    options:["Akun lataamiseen","Näytön kirkkauden säätämiseen","Puheen lähettämiseen"],
-    answer:2,
-    explanation:"PTT tarkoittaa Push-to-Talk eli paina puhuaksesi."
-  },
-  {
-    q:"Miten radiopuhelimen hätäpainikkeen kanssa toimitaan harjoituksessa?",
-    options:["Sitä kokeillaan huvin vuoksi","Sitä ei paineta ilman kouluttajan nimenomaista ohjetta ja asianmukaista järjestelyä","Sitä käytetään kuuluvuustestiin"],
-    answer:1,
-    explanation:"Hätäpainike on tarkoitettu hätätilanteisiin. Laitteissa sen toiminta voi vaihdella."
-  },
-  {
-    q:"Mikä seuraavista on hyvä radioviestin ominaisuus?",
-    options:["Pitkä ja epäselvä","Täynnä asiaan liittymätöntä puhetta","Asiallinen ja ymmärrettävä"],
-    answer:2,
-    explanation:"Asiallisuus ja ymmärrettävyys ovat radioliikenteen keskeisiä periaatteita."
+function completeLesson() {
+  const c=courseById(selectedCourse);
+  if(!c) return;
+  if(!progress.lessons[c.id]) progress.lessons[c.id]=[];
+  if(!progress.lessons[c.id].includes(selectedLesson)) {
+    progress.lessons[c.id].push(selectedLesson);
+    saveProgress();
   }
-];
+  selectedLesson=Math.min(selectedLesson+1,c.lessons.length);
+  renderLesson();
+  window.scrollTo(0,0);
+}
 
-function renderQuiz(id) {
-  const root=document.getElementById(id);
-  root.innerHTML=questions.map((q,i)=>`
-    <div class="quiz-question">
-      <h3>${i+1}. ${q.q}</h3>
-      ${q.options.map((o,j)=>`
-        <label class="quiz-option">
-          <input type="radio" name="${id}-q${i}" value="${j}">
-          <span>${o}</span>
+/* ===========================================
+   KURSSIKOKEET
+   =========================================== */
+
+function renderExam(c) {
+  const html=c.questions.map((q,i)=>`
+    <div class="question" id="qblock${i}">
+      <h3>${i+1}. ${safeText(q.q)}</h3>
+      ${q.answers.map((answer,j)=>`
+        <label class="option" id="answer${i}-${j}">
+          <input type="radio" name="exam${i}" value="${j}">
+          <span>${safeText(answer)}</span>
         </label>
       `).join("")}
     </div>
   `).join("");
+
+  document.getElementById("lessonContainer").innerHTML=`
+    <article class="lesson">
+      <span class="pill">LOPPUKOE</span>
+      <h2>Osaamisen arviointi</h2>
+      <p>Vastaa kaikkiin viiteen kysymykseen. Hyväksytyn tuloksen raja on 80 % eli vähintään neljä oikeaa vastausta.</p>
+      <div class="callout">
+        <strong>Arviointiperiaate</strong>
+        <p>Kysymykset mittaavat tämän kurssin sisältöjen ymmärtämistä. Tulos ei ole virallinen tutkinto tai pätevyys.</p>
+      </div>
+      <div id="examQuestions">${html}</div>
+      <div id="examOutput" aria-live="polite"></div>
+      <div class="lesson-actions">
+        <button class="btn btn-red" id="gradeButton" onclick="gradeExam()">Tarkista vastaukset</button>
+        <button class="btn btn-soft" onclick="renderExam(courseById(selectedCourse))">Aloita koe uudelleen</button>
+      </div>
+    </article>`;
 }
 
-function gradeQuiz(id) {
-  let score=0;
-  let missing=0;
-  const feedback=[];
-  questions.forEach((q,i)=>{
-    const selected=document.querySelector('input[name="'+id+'-q'+i+'"]:checked');
-    if(!selected) {
-      missing++;
+function gradeExam() {
+  const c=courseById(selectedCourse);
+  if(!c) return;
+  const selections=[];
+  for(let i=0;i<c.questions.length;i++) {
+    const chosen=document.querySelector(`input[name="exam${i}"]:checked`);
+    if(!chosen) {
+      document.getElementById("examOutput").innerHTML=
+        '<div class="feedback error">Vastaa kaikkiin kysymyksiin ennen tarkistamista.</div>';
       return;
     }
-    const correct=Number(selected.value)===q.answer;
-    if(correct) score++;
-    feedback.push({
-      number:i+1,
-      correct,
-      explanation:q.explanation
-    });
-  });
-  const result=document.getElementById(id+"Result");
-  if(missing>0) {
-    result.innerHTML='<div class="notice" style="margin-top:20px">Vastaa vielä kaikkiin '+missing+' puuttuvaan kysymykseen.</div>';
-    return;
+    selections.push(Number(chosen.value));
   }
-  const passed=score>=4;
-  result.innerHTML=`
-    <div class="result">
-      <h3>Tuloksesi: ${score} / ${questions.length}</h3>
-      <p>${passed?"Hyvin tehty! Hallitset harjoituksen keskeiset perusteet.":"Hyvä yritys! Käy vielä kurssimateriaali läpi ja kokeile uudelleen."}</p>
-      <div style="margin-top:15px">
-        ${feedback.map(f=>`
-          <p><strong>${f.number}. ${f.correct?"Oikein":"Väärin"}</strong> – ${f.explanation}</p>
+
+  let correct=0;
+  let explanations="";
+  c.questions.forEach((q,i)=>{
+    const ok=selections[i]===q.correct;
+    if(ok) correct++;
+    q.answers.forEach((_,j)=>{
+      const el=document.getElementById(`answer${i}-${j}`);
+      if(el) {
+        el.classList.toggle("correct",j===q.correct);
+        el.classList.toggle("wrong",j===selections[i]&&!ok);
+      }
+    });
+    explanations+=`
+      <p><strong>Kysymys ${i+1}: ${ok?"Oikein":"Väärin"}.</strong>
+      ${safeText(q.why)}</p>`;
+  });
+
+  const score=Math.round(correct/c.questions.length*100);
+  const success=score>=80;
+  progress.scores[c.id]=Math.max(progress.scores[c.id]||0,score);
+  saveProgress();
+
+  document.querySelectorAll('#examQuestions input').forEach(input=>input.disabled=true);
+  document.getElementById("gradeButton").disabled=true;
+  document.getElementById("examOutput").innerHTML=`
+    <div class="feedback ${success?"success":"error"}">
+      <h3>${success?"Hyväksytty suoritus":"Koe jäi vielä kesken"} – ${score}%</h3>
+      <p>${correct} / ${c.questions.length} oikein.</p>
+      <p>${success
+        ?"Hallitsit kurssin keskeiset asiat. Tämä on Valmiron oma harjoitussuoritus."
+        :"Kertaa erityisesti virheelliset vastaukset ja yritä uudelleen."}</p>
+      <h3>Vastausten perustelut</h3>
+      ${explanations}
+    </div>`;
+  const out=document.getElementById("examOutput");
+  out.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+/* ===========================================
+   TILANNEHARJOITUKSET
+   =========================================== */
+
+function renderScenarios() {
+  document.getElementById("scenarioGrid").innerHTML=scenarios.map((s,i)=>`
+    <article class="card">
+      <div class="card-visual">
+        <strong class="card-icon">0${i+1}</strong>
+        <small>SIMULAATIO</small>
+      </div>
+      <div class="card-body">
+        <span class="pill">${safeText(s.category.toUpperCase())}</span>
+        <h3>${safeText(s.title)}</h3>
+        <p>${safeText(s.intro)}</p>
+        <div class="card-footer">
+          <span class="note">${progress.scenarios[s.id]?"Harjoiteltu ✓":"2 päätösvaihetta"}</span>
+          <button onclick="startScenario('${s.id}')">Aloita →</button>
+        </div>
+      </div>
+    </article>
+  `).join("");
+}
+
+function startScenario(id) {
+  const s=scenarios.find(x=>x.id===id);
+  if(!s) return;
+  currentScenario=id;
+  scenarioStep=0;
+  scenarioPoints=0;
+  scenarioLocked=false;
+  document.getElementById("scenarioHeading").textContent=s.title;
+  document.getElementById("scenarioDescription").textContent=s.intro;
+  go("scenario");
+  renderScenarioStep();
+}
+
+function renderScenarioStep() {
+  const s=scenarios.find(x=>x.id===currentScenario);
+  if(!s) return;
+  scenarioLocked=false;
+  const step=s.steps[scenarioStep];
+  const percent=Math.round(scenarioStep/s.steps.length*100);
+
+  document.getElementById("scenarioContent").innerHTML=`
+    <div class="scene">
+      <small>VALMIRO / TILANNE ${scenarioStep+1} / ${s.steps.length}</small>
+      <h2>${safeText(s.title)}</h2>
+      <p>${safeText(s.intro)}</p>
+      <div class="progress"><div style="width:${percent}%"></div></div>
+    </div>
+    <div class="lesson">
+      <span class="eyebrow">Päätöksenteko</span>
+      <h2>${safeText(step.question)}</h2>
+      <p class="note">Valitse mielestäsi turvallisin ja perustelluin toimintatapa.</p>
+      <div id="sceneChoices">
+        ${step.choices.map((choice,i)=>`
+          <button class="scenario-choice" onclick="selectScenarioChoice(${i})">
+            <strong>${String.fromCharCode(65+i)}.</strong> ${safeText(choice.text)}
+          </button>
         `).join("")}
       </div>
+      <div id="sceneFeedback" aria-live="polite"></div>
+    </div>`;
+}
+
+function selectScenarioChoice(index) {
+  if(scenarioLocked) return;
+  scenarioLocked=true;
+  const s=scenarios.find(x=>x.id===currentScenario);
+  const choice=s.steps[scenarioStep].choices[index];
+  if(choice.good) scenarioPoints++;
+
+  document.querySelectorAll(".scenario-choice").forEach(b=>b.disabled=true);
+  document.getElementById("sceneFeedback").innerHTML=`
+    <div class="feedback ${choice.good?"success":"error"}">
+      <h3>${choice.good?"Perusteltu ratkaisu":"Ratkaisuun liittyy riski"}</h3>
+      <p>${safeText(choice.feedback)}</p>
     </div>
-  `;
+    <button class="btn btn-red" onclick="nextScenarioStep()">
+      ${scenarioStep===s.steps.length-1?"Näytä yhteenveto":"Jatka seuraavaan vaiheeseen →"}
+    </button>`;
 }
 
-function resetQuiz(id) {
-  renderQuiz(id);
-  document.getElementById(id+"Result").innerHTML="";
+function nextScenarioStep() {
+  const s=scenarios.find(x=>x.id===currentScenario);
+  scenarioStep++;
+  if(scenarioStep<s.steps.length) {
+    renderScenarioStep();
+    return;
+  }
+
+  const score=Math.round(scenarioPoints/s.steps.length*100);
+  progress.scenarios[s.id]=Math.max(progress.scenarios[s.id]||0,score);
+  saveProgress();
+
+  document.getElementById("scenarioContent").innerHTML=`
+    <div class="feedback ${score===100?"success":""}">
+      <span class="pill">HARJOITUS PÄÄTTYNYT</span>
+      <h2>Tilanneharjoituksen yhteenveto</h2>
+      <h3>${scenarioPoints} / ${s.steps.length} perusteltua ratkaisua</h3>
+      <p>${score===100
+        ?"Tunnistit harjoituksen turvallisimmat ratkaisut."
+        :"Joitakin valintoja kannattaa arvioida uudelleen."}</p>
+      <p>Tulos kuvaa tätä kuvitteellista harjoitusta, ei käytännön toimintavalmiutta.</p>
+    </div>
+    <div class="lesson-actions">
+      <button class="btn btn-red" onclick="startScenario('${s.id}')">Harjoittele uudelleen</button>
+      <button class="btn btn-soft" onclick="go('practice')">Kaikki harjoitukset</button>
+    </div>`;
 }
 
-const materials = {
-  radio:`VALMIRO – RADIOLIIKENTEEN PARIHARJOITUS
+/* ===========================================
+   OMA OPPIMINEN
+   =========================================== */
 
-Tarkoitus:
-Harjoitella selkeän radioviestin muodostamista.
+function renderDashboard() {
+  const done=courses.filter(passed).length;
+  const scores=courses
+    .map(c=>progress.scores[c.id])
+    .filter(v=>typeof v==="number");
+  const avg=scores.length
+    ?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length)+"%"
+    :"–";
 
-Tarvikkeet:
-Kouluttajan hyväksymät harjoitusradiot tai puheen harjoittelu ilman radiolaitteita.
+  document.getElementById("doneCount").textContent=done+" / "+courses.length;
+  document.getElementById("bestAverage").textContent=avg;
+  document.getElementById("scenarioCount").textContent=
+    Object.keys(progress.scenarios).length+" / "+scenarios.length;
 
-Toteutus:
-1. Kouluttaja esittelee harjoituksen ja käytettävän kutsutavan.
-2. Nuoret muodostavat parit.
-3. Pari harjoittelee kutsumista ja lyhyen viestin välittämistä.
-4. Osia vaihdetaan.
-5. Lopuksi käydään läpi, mikä onnistui ja mitä voidaan kehittää.
-
-Esimerkkitilanne:
-Kuvitteellinen yksikkö saapuu harjoituspaikalle ja ilmoittaa siitä johdolle.
-
-Turvallisuus:
-Käytä vain harjoitukseen hyväksyttyä laitetta ja kanavaa.
-Noudata oman organisaation ohjeita.
-Älä käytä viranomaisten operatiivista radioliikennettä luvatta.
-
-Valmiro – itsenäinen harjoitusmateriaali, ei virallinen koulutusohje.`,
-  checklist:`VALMIRO – VIESTILIIKENTEEN MUISTILISTA
-
-- Varmista oikea harjoituskanava tai puheryhmä.
-- Kuuntele ennen puhumista.
-- Mieti viesti valmiiksi.
-- Käytä kouluttajan ohjeistamaa kutsutapaa.
-- Puhu selkeästi ja rauhallisesti.
-- Pidä viesti lyhyenä ja asiallisena.
-- Vapauta puhepainike viestin lopuksi.
-- Älä paina hätäpainiketta harjoitusmielessä.
-- Noudata aina paikallisia ohjeita.
-
-Valmiro – itsenäinen harjoitusmateriaali.`
-};
-
-function downloadMaterial(type) {
-  const content=materials[type];
-  if(!content) return;
-  const blob=new Blob([content],{type:"text/plain;charset=utf-8"});
-  const url=URL.createObjectURL(blob);
-  const link=document.createElement("a");
-  link.href=url;
-  link.download="Valmiro-"+type+".txt";
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  document.getElementById("progressList").innerHTML=courses.map(c=>`
+    <div style="padding:20px 0;border-bottom:1px solid var(--line)">
+      <div style="display:flex;justify-content:space-between;gap:15px;align-items:center">
+        <strong>${safeText(c.name)}</strong>
+        <span class="note">${coursePercent(c)}%</span>
+      </div>
+      <div class="progress" style="margin:12px 0">
+        <div style="width:${coursePercent(c)}%"></div>
+      </div>
+      <div class="note">
+        ${completedLessons(c)} / ${c.lessons.length} teoriaosiota ·
+        Paras koetulos: ${progress.scores[c.id]===undefined?"Ei suoritettu":progress.scores[c.id]+"%"}
+      </div>
+      <button class="btn btn-soft" style="margin-top:12px"
+        onclick="openCourse('${c.id}')">Avaa kurssi →</button>
+    </div>
+  `).join("");
 }
 
-renderCourses();
-renderQuiz("courseQuiz");
-renderQuiz("practiceQuiz");
-document.getElementById("year").textContent=new Date().getFullYear();
+function clearProgress() {
+  if(!confirm("Haluatko varmasti poistaa kaikki tähän selaimeen tallennetut Valmiro-suoritukset?")) return;
+  progress=emptyProgress();
+  try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+  renderDashboard();
+}
 
-const initialPage=decodeURIComponent(location.hash.slice(1));
-showPage(validPages.includes(initialPage)?initialPage:"etusivu");
+/* ===========================================
+   KÄYNNISTYS
+   =========================================== */
+
+document.getElementById("copyrightYear").textContent=new Date().getFullYear();
+
+const initialHash=location.hash.replace("#","");
+if(["home","courses","practice","dashboard","about"].includes(initialHash)) {
+  go(initialHash);
+} else {
+  go("home");
+}
 </script>
 </body>
 </html>
