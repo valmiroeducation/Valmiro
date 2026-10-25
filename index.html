@@ -973,7 +973,8 @@ if(storeChoice===null)openCookie();
 'use strict';
 // ASETUS: Korvaa osoite Cloudflare Workerisi osoitteella, kun se on julkaistu.
 // Esimerkki: https://valmiro-kokeet.omakayttaja.workers.dev
-const EXAM_API = '';
+
+const EXAM_API = 'https://valmiro-exams.mikke-kaukonen.workers.dev';
 const DRAFT_KEY='valmiro_exam_draft_v6';
 const $v=(s,ctx=document)=>ctx.querySelector(s);
 const escV=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
