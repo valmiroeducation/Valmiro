@@ -37,15 +37,15 @@
 .hero-stat-value{font-size:29px;letter-spacing:-.7px;line-height:1.1;font-weight:900;font-variant-numeric:tabular-nums}
 .hero-stat-label{font-size:12px;line-height:1.4;color:#b8c7d8;font-weight:550;margin-top:3px}
 .hero-stat-chevron{font-size:18px;color:#ff9c9e;opacity:.8;text-align:right}
-button.hero-mini-card:hover{border-color:#f3797f;background:#223a56e8;transform:translateX(-3px)}
-.hero-mini-card.static{cursor:default;grid-template-columns:39px minmax(0,1fr) 19px}
-.hero-mini-card.static:focus{outline:none}
+.hero-mini-card{cursor:default;transform-origin:center center;will-change:transform}
+@media (hover:hover) and (pointer:fine){
+ .hero-mini-card:hover{border-color:#f3797f;background:#223a56e8;transform:scale(1.035);box-shadow:0 15px 34px #0005,0 0 0 1px #f3797f44}
+}
 @media(max-width:960px){
  .hero-inner{grid-template-columns:minmax(0,1fr);gap:22px;align-content:center;padding-top:68px;padding-bottom:45px}
  .hero-mini-stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
  .hero-stat-heading{grid-column:1/-1}
  .hero-mini-card{grid-template-columns:1fr;align-content:start;gap:5px;padding:14px 12px;min-height:119px}
- .hero-mini-card.static{grid-template-columns:1fr}
  .hero-stat-icon{width:32px;height:32px}
  .hero-stat-icon svg{width:19px;height:19px}
  .hero-stat-value{font-size:25px}
@@ -766,15 +766,15 @@ function home(){root.innerHTML=`<section class="hero"><div class="shell hero-inn
  <div class="hero-copy"><div class="eyebrow">PALOKUNTANUORTEN ITSENÄINEN OPPIMISYMPÄRISTÖ</div><h1>Osaamista ennen <span>toimintaa.</span></h1><p>Syvennä palokuntatietoja, testaa ymmärrystäsi ja harjoittele tilannearviointia. Ei kirjautumista eikä turhaa säätöä.</p><div class="hero-actions"><button class="btn btn-red" data-go="/kurssit">Selaa koulutuksia →</button><button class="btn btn-muted" data-go="/tilanteet">Tilanneharjoitukset</button></div></div>
  <aside class="hero-mini-stats" aria-label="Valmiro lyhyesti">
   <div class="hero-stat-heading">Valmiro lyhyesti</div>
-  <button type="button" class="hero-mini-card" data-go="/kurssit" aria-label="${COURSES.length} koulutusta – selaa koulutuksia">
+  <div class="hero-mini-card">
    <span class="hero-stat-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 6c-2.3-1.5-5-1.8-9-1v14c4-1 6.7-.5 9 1 2.3-1.5 5-2 9-1V5c-4-.8-6.7-.5-9 1Z"/><path d="M12 6v14"/></svg></span>
-   <span><span class="hero-stat-value">${COURSES.length}</span><span class="hero-stat-label" style="display:block">Koulutusta</span></span><span class="hero-stat-chevron" aria-hidden="true">→</span>
-  </button>
-  <button type="button" class="hero-mini-card" data-go="/tilanteet" aria-label="${SCENARIOS.length} tilanneharjoitusta – avaa harjoitukset">
+   <span><span class="hero-stat-value">${COURSES.length}</span><span class="hero-stat-label" style="display:block">Koulutusta</span></span><span aria-hidden="true"></span>
+  </div>
+  <div class="hero-mini-card">
    <span class="hero-stat-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 20v-9m-3 3 3-3 3 3"/><circle cx="12" cy="5" r="2"/><path d="M6.8 8.7a7.5 7.5 0 0 0 0 10.6m10.4-10.6a7.5 7.5 0 0 1 0 10.6"/></svg></span>
-   <span><span class="hero-stat-value">${SCENARIOS.length}</span><span class="hero-stat-label" style="display:block">Tilanneharjoitusta</span></span><span class="hero-stat-chevron" aria-hidden="true">→</span>
-  </button>
-  <div class="hero-mini-card static">
+   <span><span class="hero-stat-value">${SCENARIOS.length}</span><span class="hero-stat-label" style="display:block">Tilanneharjoitusta</span></span><span aria-hidden="true"></span>
+  </div>
+  <div class="hero-mini-card">
    <span class="hero-stat-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="12" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0"/></svg></span>
    <span><span class="hero-stat-value">0 €</span><span class="hero-stat-label" style="display:block">Maksuton käyttö</span></span><span></span>
   </div>
